@@ -1,0 +1,392 @@
+/* === Base Styles === */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  color: #333;
+}
+
+/* === Topbar === */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #4e73df; /* blue header */
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.topbar .logout {
+  background: #1cc88a; /* green logout button */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.topbar .logout:hover {
+  background: #17a673;
+}
+
+/* === Layout === */
+.dashboard {
+  display: flex;
+  min-height: calc(100vh - 50px);
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 240px;
+  background: #34495e;
+  color: #fff;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+}
+.sidebar a {
+  color: #fff;
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+.sidebar a:hover {
+  background: #2c3e50;
+}
+.sidebar a.active {
+  background: #2c3e50;
+  color: #ffd700; /* gold highlight */
+}
+
+/* Dropdown inside sidebar */
+.dropdown {
+  display: none;
+  flex-direction: column;
+  margin-left: 10px;
+}
+.dropdown a {
+  font-weight: normal;
+  padding-left: 30px;
+  font-size: 14px;
+}
+
+/* === Content Area === */
+.content {
+  flex: 1;
+  padding: 30px;
+}
+.welcome-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+.welcome-box h2 {
+  margin-top: 0;
+  color: #4e73df;
+}
+
+/* === Toast Notifications === */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #4e73df;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.toast.show {
+  opacity: 1;
+}
+.toast.error {
+  background: #e74c3c;
+}
+.toast.success {
+  background: #1cc88a;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .sidebar a {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+  }
+}
+
+/* === Users Table Styling === */
+#users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#users-table th,
+#users-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+#users-table th {
+  background: #4e73df;
+  color: #fff;
+  font-weight: bold;
+}
+
+#users-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+#users-table tr:hover {
+  background: #eef2ff;
+}
+
+/* === Admin Table Styling === */
+.admin-list-container {
+  margin-bottom: 40px;
+}
+
+#admins-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#admins-table th,
+#admins-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+#admins-table th {
+  background: #4e73df;
+  color: #fff;
+  font-weight: bold;
+}
+
+#admins-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+#admins-table tr:hover {
+  background: #eef2ff;
+}
+
+/* === Admin Form Table === */
+.form-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.form-table th {
+  width: 180px;
+  text-align: right;
+  padding: 12px;
+  background: #f4f6f9;
+  font-weight: bold;
+}
+
+.form-table td {
+  padding: 12px;
+}
+
+.form-table input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-table button {
+  padding: 10px 20px;
+  background: #4e73df;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.form-table button:hover {
+  background: #2c3e50;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.add-video-form {
+  margin: 20px 0;
+  padding: 15px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.add-video-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.add-video-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.add-video-form button {
+  padding: 10px;
+  background: #4e73df;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.add-video-form button:hover {
+  background: #2c3e50;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+.guides-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.video-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn {
+  background: #f1c40f;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.edit-btn:hover {
+  background: #d4ac0d;
+}
+
+/* Base button styles */
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  transition: background 0.3s ease;
+}
+.btn-danger { background: #e74c3c; }
+.btn-danger:hover { background: #c0392b; }
+.btn-warning { background: #f1c40f; color: #333; }
+.btn-warning:hover { background: #d4ac0d; }
+
+/* Modal styling */
+.modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.modal-content h3 {
+  margin-top: 0;
+  color: #4e73df;
+}
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+
+/* No Videos */
+.no-videos {
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+.no-videos p {
+  margin: 0;
+}
+
+/* Ensure modals can be toggled with a class */
+.modal.show {
+  display: flex;
+}
+
+/* Raise modal above toast notifications */
+.modal {
+  z-index: 2000;
+}
+
+/* Improve edit button contrast */
+.edit-btn {
+  background: #f1c40f;
+  color: #333; /* dark text for readability */
+}
+.edit-btn:hover {
+  background: #d4ac0d;
+}

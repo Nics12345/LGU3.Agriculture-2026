@@ -1,0 +1,347 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+}
+
+#dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* === Layout === */
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 220px;
+  background: #34495e;
+  color: #fff;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  transition: transform 0.3s ease;
+}
+.sidebar a.active {
+  background: #2c3e50;
+  color: #ffd700;
+}
+.sidebar a {
+  color: #fff;
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  font-weight: bold;
+}
+.sidebar a:hover {
+  background: #2c3e50;
+}
+.sidebar-link {
+  display: block;
+  padding: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.sidebar-link.active {
+  background-color: #007bff; /* highlight color */
+  font-weight: bold;
+}
+
+/* === Content Area === */
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* === Topbar === */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #4e73df;
+  color: #fff;
+  padding: 10px 20px;
+}
+.topbar-left { display: flex; align-items: center; }
+.topbar-right { display: flex; align-items: center; gap: 20px; }
+
+/* === Profile Dropdown === */
+.profile-dropdown { position: relative; cursor: pointer; }
+.profile-name { font-weight: bold; }
+.profile-menu {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: #fff;
+  color: #333;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  min-width: 200px;
+  z-index: 1000;
+}
+.profile-menu a {
+  display: block;
+  margin-top: 10px;
+  color: #4e73df;
+  text-decoration: none;
+  font-weight: bold;
+}
+.profile-menu a:hover { text-decoration: underline; }
+
+/* === Logout Button === */
+.logout {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.logout:hover { background: #c0392b; }
+
+/* === Weather Cards === */
+.weather-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.weather-card {
+  display: block;
+  width: 280px;
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.weather-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+}
+.weather-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+.weather-header img {
+  width: 80px;
+  height: 80px;
+}
+.weather-body {
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/* Condition-specific colors */
+.weather-card.sunny {
+  background: linear-gradient(135deg, #f9d423, #ff4e50);
+  color: #333;
+}
+.weather-card.cloudy {
+  background: linear-gradient(135deg, #757f9a, #d7dde8);
+  color: #000;
+}
+.weather-card.rainy {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #fff;
+}
+.weather-card.stormy {
+  background: linear-gradient(135deg, #434343, #000000);
+  color: #fff;
+}
+.weather-card.expanded {
+  transform: scale(1.1);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.4);
+}
+
+/* === Video Cards === */
+.video-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.video-card {
+  background: #fff;
+  border-radius: 8px;
+  width: 280px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+.video-card:hover { transform: scale(1.05); }
+.video-card img { width: 100%; height: auto; display: block; }
+.video-card h3 { font-size: 16px; margin: 10px; color: #333; }
+
+/* === Weather Search Bar === */
+.weather-search {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px auto;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.weather-search input {
+  width: 500px;
+  max-width: 90%;
+  padding: 14px 20px;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+.weather-search input:focus {
+  box-shadow: 0 0 8px rgba(78, 115, 223, 0.6);
+}
+.weather-search button {
+  padding: 14px 20px;
+  font-size: 16px;
+  background: #4e73df;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.weather-search button:hover { background: #2c3e50; }
+.weather-search input::placeholder { color: #999; font-style: italic; }
+
+/* === Menu Toggle Visibility === */
+/* Hide by default (desktop) */
+.menu-toggle {
+  display: none;
+}
+
+/* Show only on mobile */
+@media (max-width:768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+  }
+  .sidebar.show { transform: translateX(0); }
+
+  .menu-toggle {
+    display: block;
+    background:#34495e;
+    color:#fff;
+    border:none;
+    padding:10px;
+    cursor:pointer;
+    font-size:18px;
+  }
+
+  .topbar { justify-content: space-between; }
+}
+
+/* Categories */
+.categories-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.category-card {
+  flex: 0 0 300px;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.category-title {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.video-deck {
+  display: none; /* hidden until clicked */
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.category-card.active .video-deck {
+  display: flex; /* show deck when active */
+}
+
+.video-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform 0.2s ease;
+}
+
+.video-card:hover {
+  transform: scale(1.03);
+}
+
+.video-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.video-card h4 {
+  margin: 8px;
+  font-size: 14px;
+  color: #222;
+}
+
+.no-videos {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+}
+
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.logs-table th, .logs-table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.logs-table th {
+  background: #4e73df;
+  color: #fff;
+}
+
+.logs-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.logs-table tr:hover {
+  background: #eef2ff;
+}
