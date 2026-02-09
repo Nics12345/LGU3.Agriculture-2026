@@ -11,7 +11,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 <link rel="stylesheet" href="admin-dashboard.css">
 
 <h2>👥 User Management</h2>
-<p>View, edit, or remove registered users.</p>
+<p>View and edit registered users. Users inactive for more than 1 week will be flagged.</p>
 
 <div class="user-table-wrapper">
   <table id="users-table">
@@ -22,21 +22,29 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         <th>📞 Phone</th>
         <th>🏠 Address</th>
         <th>📅 Created</th>
+        <th>⏳ Status</th>
         <th>⚙️ Actions</th>
       </tr>
     </thead>
     <tbody>
       <?php
-      $result = $conn->query("SELECT id, fullname, email, phone, address, created_at FROM users ORDER BY created_at DESC");
+      $result = $conn->query("SELECT id, fullname, email, phone, address, created_at, last_active FROM users ORDER BY created_at DESC");
       if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-          $date = date("F j, Y", strtotime($row['created_at']));
+          $createdDate = date("F j, Y", strtotime($row['created_at']));
+          
+          // Calculate inactivity
+          $lastActive = isset($row['last_active']) ? strtotime($row['last_active']) : strtotime($row['created_at']);
+          $inactiveDays = (time() - $lastActive) / (60 * 60 * 24);
+          $status = $inactiveDays > 7 ? "⚠️ Inactive > 1 week" : "✅ Active";
+
           echo "<tr>
                   <td>" . htmlspecialchars($row['fullname']) . "</td>
                   <td>" . htmlspecialchars($row['email']) . "</td>
                   <td>" . htmlspecialchars($row['phone']) . "</td>
                   <td>" . htmlspecialchars($row['address']) . "</td>
-                  <td>" . $date . "</td>
+                  <td>" . $createdDate . "</td>
+                  <td>" . $status . "</td>
                   <td>
                     <button class='btn btn-warning edit-btn'
                             data-id='" . $row['id'] . "'
@@ -44,12 +52,11 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
                             data-email='" . htmlspecialchars($row['email']) . "'
                             data-phone='" . htmlspecialchars($row['phone']) . "'
                             data-address='" . htmlspecialchars($row['address']) . "'>✏️ Edit</button>
-                    <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>🗑 Delete</button>
                   </td>
                 </tr>";
         }
       } else {
-        echo "<tr><td colspan='6' style='text-align:center;'>🚫 No users found</td></tr>";
+        echo "<tr><td colspan='7' style='text-align:center;'>🚫 No users found</td></tr>";
       }
       ?>
     </tbody>
@@ -85,18 +92,6 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         <button type="submit" class="btn btn-warning">Save</button>
       </div>
     </form>
-  </div>
-</div>
-
-<!-- Delete Modal -->
-<div id="deleteModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">Confirm Delete</div>
-    <p>Are you sure you want to delete this user?</p>
-    <div class="modal-actions">
-      <button type="button" onclick="closeModal('deleteModal')" class="btn btn-warning">Cancel</button>
-      <button id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
-    </div>
   </div>
 </div>
 

@@ -390,3 +390,94 @@ body {
 .edit-btn:hover {
   background: #d4ac0d;
 }
+
+/* Market Data Form */
+.admin-form-container {
+  margin: 20px 0;
+}
+
+.form-table th {
+  text-align: left;
+  padding: 8px;
+}
+
+.form-table td {
+  padding: 8px;
+}
+
+.form-submit-cell {
+  text-align: center;
+}
+
+.btn-success {
+  background: #1cc88a;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-success:hover {
+  background: #17a673;
+}
+
+/* Market Data Table */
+.user-table-wrapper {
+  margin-top: 20px;
+}
+
+.user-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table-wrapper th,
+.user-table-wrapper td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.delete-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* Trend Colors */
+.status-Increasing {
+  color: red;
+  font-weight: bold;
+}
+
+.status-Decreasing {
+  color: green;
+  font-weight: bold;
+}
+
+.status-Stable {
+  color: gray;
+  font-weight: bold;
+}
+
+.tab-nav {
+  margin-bottom: 20px;
+}
+.tab-btn {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  background: #4e73df;
+  color: #fff;
+  font-weight: bold;
+  margin-right: 5px;
+  border-radius: 4px;
+}
+.tab-btn.active {
+  background: #1cc88a;
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}

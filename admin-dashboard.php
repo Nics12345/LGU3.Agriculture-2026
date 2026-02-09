@@ -21,16 +21,16 @@ if (!isset($_SESSION['admin_id'])) {
   </div>
 
   <div class="dashboard">
- <div class="sidebar">
-  <a href="#" onclick="loadPage('admin-users.php')">👥 User Management</a>
-  <a href="#" onclick="loadPage('admin-create.php')">🛠 Admin Creation</a>
-  
-  <a href="#" onclick="loadPage('admin-market-data.php')">📈 Market Data</a>
+    <div class="sidebar">
+      <a href="#" onclick="loadPage('admin-users-admin.php')">👥 User & Admin Management</a>
 
-  <a href="#" onclick="toggleDropdown()">📚 Guides Management ▾</a>
-  <a href="#" onclick="loadPage('admin-guides-pest.php')">🐛 Pest Guides</a>
-        <a href="#" onclick="loadPage('admin-guides-farm.php')">🌾 Farm Guides</a>
-  </div>
+      <a href="#" onclick="loadPage('admin-market-data.php')">📈 Market Data</a>
+
+      <a href="#" onclick="toggleDropdown()">📚 Guides Management ▾</a>
+      <a href="#" onclick="loadPage('admin-guides-pest.php')">🐛 Pest Guides</a>
+      <a href="#" onclick="loadPage('admin-guides-farm.php')">🌾 Farm Guides</a>
+    </div>
+
     <div class="content" id="admin-content">
       <div class="welcome-box">
         <h2>Welcome to the Admin Dashboard</h2>

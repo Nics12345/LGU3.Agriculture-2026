@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 07, 2026 at 04:50 AM
+-- Generation Time: Feb 09, 2026 at 11:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,10 +40,8 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `fullname`, `email`, `password`, `created_at`) VALUES
-(3, 'Emerson Bustamante', 'emerson@gmail.com', '$2y$10$EC55F7G2xVADIzO4s5KdjO6dNf0nW1Z3SNbM7aJ4hHJvvLn3HaZDK', '2026-01-26 08:02:14'),
 (26, 'Zyrill John David', 'Zyzy@gmail.com', '$2y$10$IubZgwvdVN8DQhXk1x5ftOrCqOzJPpNkYQ8IJep2tfjxWIPeW/Zgq', '2026-01-28 11:23:38'),
-(32, 'Cedrick Dominiq Barro', '123456@gmail.com', '$2y$10$NqAmxUPXYAs45I..efYrlu2irOIP.fXlIgOijBgtsWtxWjhi.GfnC', '2026-02-01 08:36:14'),
-(33, 'Cedrick Dominiq Barro', 'qwer@gmail.com', '$2y$10$SoX6rzFLZIkBeHM.pTpFteHvYRRKYRKMkwEL0IB9gyyV5GhgwRGuK', '2026-02-01 10:20:48');
+(37, 'Nicson Bustamante', 'EmersonBustamante@gmail.com', '$2y$10$TfUnJLUP8kHBezsREs2wSOTlQqMthEGuctjF/kBb76t9B6EJvky72', '2026-02-09 10:07:51');
 
 -- --------------------------------------------------------
 
@@ -109,6 +107,15 @@ CREATE TABLE `farm_videos` (
   `title` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `farm_videos`
+--
+
+INSERT INTO `farm_videos` (`id`, `youtube_id`, `title`, `created_at`) VALUES
+(13, 'k2q0-LiBsqg', '1234', '2026-02-09 09:12:33'),
+(14, 'gLpktnJgbbE', '1234', '2026-02-09 09:12:45'),
+(15, 'gLpktnJgbbE', 'asdwe', '2026-02-09 09:12:55');
 
 -- --------------------------------------------------------
 
@@ -211,18 +218,20 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `reset_token` varchar(64) DEFAULT NULL,
-  `reset_expires` datetime DEFAULT NULL
+  `reset_expires` datetime DEFAULT NULL,
+  `last_active` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `fullname`, `email`, `phone`, `address`, `password`, `created_at`, `reset_token`, `reset_expires`) VALUES
-(12, 'Emerson Bustamante', 'EmersonBustamante@gmail.com', '1234567809', '1asd1312as', '$2y$10$ujAnvVxpCM0b4Nse2BMjZe/rM30db4gwNh0eNvSS6Ce4GnnG25pfq', '2026-01-28 11:22:19', NULL, NULL),
-(13, 'Cedrick dominiq barro', 'cedrickdominiqbarro@gmail.com', '1235451265', 'asdqweqwe', '$2y$10$UuYEC46eShMuLtR2SSCsbeAER.o3riIYABFXFEWi9XFfw9O8Knlni', '2026-02-04 07:37:08', 'efc7894d0221fa2a7c0467462df27954', '2026-02-04 14:51:21'),
-(15, 'Cedrick dominiq barro', 'cdbarro@gmail.com', '1234123123', 'asdeqwewq', '$2y$10$E80jo00aTHZ5B0rvMohii.YsQJhlqWwhhXlASY4/0E8PPSfqyOjtm', '2026-02-04 12:38:19', NULL, NULL),
-(16, 'Nicson Bustamante', 'david@gmail.com', '09933608401', '21 fortuna', '$2y$10$YfKrTwh7TxQiTgR63D2A.e8KA7JxLz.vXg7V6VbhfnRnhOSFrHCXC', '2026-02-06 23:26:18', NULL, NULL);
+INSERT INTO `users` (`id`, `fullname`, `email`, `phone`, `address`, `password`, `created_at`, `reset_token`, `reset_expires`, `last_active`) VALUES
+(12, 'Emerson Bustamante', 'EmersonBustamante@gmail.com', '1234567809', '1asd1312as', '$2y$10$ujAnvVxpCM0b4Nse2BMjZe/rM30db4gwNh0eNvSS6Ce4GnnG25pfq', '2026-01-28 11:22:19', NULL, NULL, '2026-02-09 16:14:40'),
+(13, 'Cedrick dominiq barro', 'cedrickdominiqbarro@gmail.com', '1235451265', 'asdqweqwe', '$2y$10$UuYEC46eShMuLtR2SSCsbeAER.o3riIYABFXFEWi9XFfw9O8Knlni', '2026-02-04 07:37:08', 'efc7894d0221fa2a7c0467462df27954', '2026-02-04 14:51:21', '2026-02-09 16:14:40'),
+(15, 'Cedrick dominiq barro', 'cdbarro@gmail.com', '1234123123', 'asdeqwewq', '$2y$10$E80jo00aTHZ5B0rvMohii.YsQJhlqWwhhXlASY4/0E8PPSfqyOjtm', '2026-02-04 12:38:19', NULL, NULL, '2026-02-09 16:14:40'),
+(16, 'Nicson Bustamante', 'david@gqewqmail.com', '09933608401', '21 fortuna', '$2y$10$YfKrTwh7TxQiTgR63D2A.e8KA7JxLz.vXg7V6VbhfnRnhOSFrHCXC', '2026-02-06 23:26:18', NULL, NULL, '2026-02-09 16:14:40'),
+(17, 'Cedrick dominiq barro', 'wrightaudrey505@gmail.com', '123121515125', '13wd1e122', '$2y$10$8lgUGgRlvX/1JQ.omHHoCuqd5CoBoG4GtrvZIe8nN6g3VjQoVqjfW', '2026-02-09 10:27:56', NULL, NULL, '2026-02-09 18:27:56');
 
 -- --------------------------------------------------------
 
@@ -317,7 +326,7 @@ ALTER TABLE `weather_queries`
 -- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `chatbot_logs`
@@ -335,7 +344,7 @@ ALTER TABLE `conversations`
 -- AUTO_INCREMENT for table `farm_videos`
 --
 ALTER TABLE `farm_videos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `market_data`
@@ -353,7 +362,7 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `pest_categories`
 --
 ALTER TABLE `pest_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `pest_videos`
@@ -365,7 +374,7 @@ ALTER TABLE `pest_videos`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `weather_queries`

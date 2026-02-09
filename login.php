@@ -3,6 +3,37 @@ session_start();
 header("Content-Type: application/json");
 include 'db.php';
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'vendor/autoload.php';
+
+// ✅ Handle OTP verification first
+if (isset($_POST['otp'])) {
+    $otp = trim($_POST['otp']);
+    if (!isset($_SESSION['otp'], $_SESSION['pending_user_id'])) {
+        echo json_encode(["status" => "error", "message" => "No OTP session found"]);
+        exit;
+    }
+    if (time() > $_SESSION['otp_expires']) {
+        echo json_encode(["status" => "error", "message" => "OTP expired"]);
+        unset($_SESSION['otp'], $_SESSION['pending_user_id'], $_SESSION['pending_fullname'], $_SESSION['pending_email'], $_SESSION['otp_expires']);
+        exit;
+    }
+    if ($otp == $_SESSION['otp']) {
+        $_SESSION['user_id']   = $_SESSION['pending_user_id'];
+        $_SESSION['fullname']  = $_SESSION['pending_fullname'];
+        $_SESSION['email']     = $_SESSION['pending_email'];
+
+        unset($_SESSION['otp'], $_SESSION['pending_user_id'], $_SESSION['pending_fullname'], $_SESSION['pending_email'], $_SESSION['otp_expires']);
+
+        echo json_encode(["status" => "success", "message" => "Login successful", "redirect" => "dashboard.php"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Invalid OTP"]);
+    }
+    exit;
+}
+
+// ✅ Handle email/password login
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 if (strpos($contentType, 'application/json') === 0) {
     $data = json_decode(file_get_contents("php://input"), true) ?? [];
@@ -13,45 +44,55 @@ if (strpos($contentType, 'application/json') === 0) {
     $password = trim($_POST['password'] ?? '');
 }
 
-if (empty($email) || empty($password)) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Email and password are required",
-        "forgot_link" => "forgot-password.php"
-    ]);
+if ($email === '' || $password === '') {
+    echo json_encode(["status" => "error", "message" => "Email and password are required"]);
     exit;
 }
 
-$stmt = $conn->prepare("SELECT id, fullname, email, password, phone FROM users WHERE email=?");
+$stmt = $conn->prepare("SELECT id, fullname, email, password FROM users WHERE email=? LIMIT 1");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($row = $result->fetch_assoc()) {
     if (password_verify($password, $row['password'])) {
-        $_SESSION['user_id']   = $row['id'];
-        $_SESSION['fullname']  = $row['fullname'];
-        $_SESSION['email']     = $row['email'];
+        // ✅ Generate OTP
+        $otp = rand(100000, 999999);
+        $_SESSION['pending_user_id'] = $row['id'];
+        $_SESSION['pending_fullname'] = $row['fullname'];
+        $_SESSION['pending_email'] = $row['email'];
+        $_SESSION['otp'] = $otp;
+        $_SESSION['otp_expires'] = time() + 300; // 5 minutes expiry
 
-        echo json_encode([
-            "status"   => "success",
-            "message"  => "Login successful",
-            "user"     => $row['fullname'],
-            "redirect" => "dashboard.php"
-        ]);
+        // ✅ Send OTP via Gmail SMTP
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';              // SMTP server
+        $mail->SMTPAuth = true;
+        $mail->Username = 'bustamante.emerson.royo@gmail.com';     // your Gmail address
+        $mail->Password = 'wrap bovs zrvh vqds';       // Gmail App Password
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+
+            $mail->setFrom('yourgmail@gmail.com', 'LGU 3 System');
+            $mail->addAddress($row['email'], $row['fullname']);
+
+            $mail->isHTML(true);
+            $mail->Subject = 'Your Login OTP Code';
+            $mail->Body    = "Hello " . htmlspecialchars($row['fullname']) . ",<br>Your OTP code is: <b>$otp</b><br>This code will expire in 5 minutes.";
+
+            $mail->send();
+            echo json_encode(["status" => "otp_required", "message" => "OTP sent to your email"]);
+        } catch (Exception $e) {
+            echo json_encode(["status" => "otp_required", "message" => "OTP generated but email failed: {$mail->ErrorInfo}"]);
+        }
     } else {
-        echo json_encode([
-            "status" => "error",
-            "message" => "Invalid password",
-            "forgot_link" => "forgot-password.php"
-        ]);
+        echo json_encode(["status" => "error", "message" => "Invalid password"]);
     }
 } else {
-    echo json_encode([
-        "status" => "error",
-        "message" => "User not found",
-        "forgot_link" => "forgot-password.php"
-    ]);
+    echo json_encode(["status" => "error", "message" => "User not found"]);
 }
 
 $stmt->close();

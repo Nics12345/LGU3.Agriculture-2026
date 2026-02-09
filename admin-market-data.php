@@ -39,6 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_name'])) {
 }
 ?>
 
+<link rel="stylesheet" href="admin-dashboard.css">
+
 <div class="admin-form-container">
     <h2>📈 Product Market Data</h2>
     <p>Update the current market rates for crops and supplies.</p>
@@ -68,15 +70,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_name'])) {
                 </td>
             </tr>
             <tr>
-                <td colspan="2" style="text-align:center;">
-                    <button type="submit" class="btn" style="background:#1cc88a;">Add Product</button>
+                <td colspan="2" class="form-submit-cell">
+                    <button type="submit" class="btn btn-success">Add Product</button>
                 </td>
             </tr>
         </table>
     </form>
 </div>
 
-<div class="user-table-wrapper" style="margin-top:20px;">
+<div class="user-table-wrapper">
     <table>
         <thead>
             <tr>
@@ -85,7 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_name'])) {
                 <th>Unit</th>
                 <th>Trend</th>
                 <th>Last Updated</th>
-                <th>Action</th> </tr>
+                <th>Action</th>
+            </tr>
         </thead>
         <tbody>
             <?php
@@ -97,10 +100,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_name'])) {
                         <td><b>" . htmlspecialchars($row['product_name']) . "</b></td>
                         <td>₱" . number_format($row['price'], 2) . "</td>
                         <td>{$row['unit']}</td>
-                        <td style='color:{$statusColor}; font-weight:bold;'>{$row['status']}</td>
+                        <td class='status-{$row['status']}'>" . htmlspecialchars($row['status']) . "</td>
                         <td>" . date("M j, g:i a", strtotime($row['updated_at'])) . "</td>
                         <td>
-                            <button onclick='deleteMarketItem({$row['id']})' class='btn btn-danger' style='padding: 5px 10px; font-size: 12px;'>Delete</button>
+                            <button onclick='deleteMarketItem({$row['id']})' class='btn btn-danger delete-btn'>Delete</button>
                         </td>
                     </tr>";
                 }
@@ -112,33 +115,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_name'])) {
     </table>
 </div>
 
-<script>
-// Function to handle deletion via AJAX
-async function deleteMarketItem(id) {
-    if (confirm("Are you sure you want to remove this product?")) {
-        const formData = new FormData();
-        formData.append('delete_id', id);
-
-        try {
-            const response = await fetch('admin-market-data.php', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            
-            if (typeof showToast === "function") {
-                showToast(result.message, result.status);
-            } else {
-                alert(result.message);
-            }
-
-            if (result.status === 'success') {
-                // Refresh the current page view
-                loadPage('admin-market-data.php');
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-}
-</script>
+<script src="admin-dashboard.js"></script>

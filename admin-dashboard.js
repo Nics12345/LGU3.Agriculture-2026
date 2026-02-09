@@ -12,24 +12,24 @@ function loadPage(page) {
       // ✅ Inject the HTML
       container.innerHTML = html;
 
-      // ✅ Re-bind admin form handler after content is loaded
+      // ✅ Re-bind forms after content is loaded
       const adminForm = document.getElementById("create-admin-form");
       if (adminForm) bindCreateAdminForm(adminForm);
 
-      // ✅ Re-bind video form handler after content is loaded
       const videoForm = document.getElementById("add-video-form");
       if (videoForm) bindAddVideoForm(videoForm);
 
-      // ✅ Re-bind category form handler after content is loaded
       const categoryForm = document.getElementById("add-category-form");
       if (categoryForm) bindAddCategoryForm(categoryForm);
 
-      // ✅ Re-bind pest video form handler after content is loaded
-      const pestVideoForm = document.getElementById("add-video-form");
+      const pestVideoForm = document.getElementById("add-pest-video-form");
       if (pestVideoForm) bindAddPestVideoForm(pestVideoForm);
 
-      // ✅ Re-bind user management handlers after content is loaded
-      if (document.getElementById("users-table")) {
+      const marketForm = document.getElementById("add-market-form");
+      if (marketForm) bindMarketForm(marketForm);
+
+      // ✅ Re-bind User Management handlers (now inside admin-users-admin.php)
+      if (document.getElementById("users-table") && typeof bindUserManagement === "function") {
         bindUserManagement();
       }
     })
@@ -37,113 +37,6 @@ function loadPage(page) {
       container.innerHTML = "<p>Error loading content.</p>";
       console.error(err);
     });
-}
-function loadPage(page) {
-  const container = document.getElementById("admin-content");
-  container.innerHTML = "<p>Loading...</p>";
-
-  fetch(page)
-    .then(response => response.text())
-    .then(html => {
-      container.innerHTML = html;
-
-      // --- ADD THESE NEW BINDINGS BELOW ---
-      
-      // Re-bind Tech Assistant Form
-      const assistantForm = document.getElementById("add-assistant-form");
-      if (assistantForm) bindAssistantForm(assistantForm);
-
-      // Re-bind Market Data Form
-      const marketForm = document.getElementById("add-market-form");
-      if (marketForm) bindMarketForm(marketForm);
-async function deleteMarketItem(id) {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-
-    const formData = new FormData();
-    formData.append('delete_id', id);
-
-    try {
-        const response = await fetch('admin-market-data.php', {
-            method: 'POST',
-            body: formData
-        });
-        const result = await response.json();
-
-        // Use your existing showToast function if available
-        if (window.showToast) {
-            showToast(result.message, result.status);
-        } else {
-            alert(result.message);
-        }
-
-        // Reload the section to show it's gone
-        if (result.status === 'success') {
-            loadPage('admin-market-data.php');
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred while deleting.");
-    }
-}
-
-// Make it globally accessible
-window.deleteMarketItem = deleteMarketItem;
-      // --- EXISTING BINDINGS ---
-      const adminForm = document.getElementById("create-admin-form");
-      if (adminForm) bindCreateAdminForm(adminForm);
-      // ... rest of your existing bindings ...
-    });
-}
-
-// Add these helper functions at the bottom of admin-dashboard.js
-function bindAssistantForm(form) {
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const res = await fetch("admin-tech-assistant.php", { method: "POST", body: formData });
-        const result = await res.json();
-        showToast(result.message, result.status);
-        if (result.status === "success") loadPage("admin-tech-assistant.php");
-    };
-}
-
-function bindMarketForm(form) {
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const res = await fetch("admin-market-data.php", { method: "POST", body: formData });
-        const result = await res.json();
-        showToast(result.message, result.status);
-        if (result.status === "success") loadPage("admin-market-data.php");
-    };
-}
-// Bind admin creation form
-function bindCreateAdminForm(form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch("admin-create.php", {
-        method: "POST",
-        body: formData
-      });
-      const result = await response.json();
-
-      if (result.status === "success") {
-        showToast(result.message, "success");
-        form.reset();
-        refreshAdminTable();
-      } else {
-        showToast(result.message, "error");
-        if (result.field) {
-          document.getElementById(result.field + "-error").textContent = result.message;
-        }
-      }
-    } catch (err) {
-      showToast("Error submitting form", "error");
-    }
-  });
 }
 
 // Bind add video form
@@ -172,6 +65,7 @@ function bindAddVideoForm(form) {
 // Toggle Guides Management dropdown
 function toggleDropdown() {
   const dropdown = document.getElementById("guidesDropdown");
+  if (!dropdown) return;
   dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
 }
 
@@ -183,6 +77,7 @@ function logout() {
 // Toast notifications
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
+  if (!toast) return;
   toast.textContent = message;
   toast.className = "toast " + type;
   toast.classList.add("show");
@@ -192,13 +87,14 @@ function showToast(message, type = "success") {
   }, 3000);
 }
 
-// Refresh admin table
+// Refresh admin table (now calls merged page)
 async function refreshAdminTable() {
   try {
-    const response = await fetch("admin-create.php?list=1");
+    const response = await fetch("admin-users-admin.php?list=1");
     const admins = await response.json();
 
     const tbody = document.querySelector("#admins-table tbody");
+    if (!tbody) return;
     tbody.innerHTML = "";
 
     admins.forEach(admin => {
@@ -215,10 +111,44 @@ async function refreshAdminTable() {
   }
 }
 
+// Bind admin creation form (now posts to merged page)
+function bindCreateAdminForm(form) {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("admin-users-admin.php", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.json();
+
+      if (result.status === "success") {
+        showToast(result.message, "success");
+        form.reset();
+        refreshAdminTable();
+      } else {
+        showToast(result.message, "error");
+        if (result.field) {
+          const errorEl = document.getElementById(result.field + "-error");
+          if (errorEl) errorEl.textContent = result.message;
+        }
+      }
+    } catch (err) {
+      showToast("Error submitting form", "error");
+    }
+  });
+}
+
 // Load farm videos dynamically
 async function loadFarmVideos() {
   const container = document.getElementById("video-list");
-  // Show loading message while fetching
+  if (!container) {
+    console.warn("video-list container not found");
+    return;
+  }
+
   container.innerHTML = "<p class='loading'>🔄 Updating videos...</p>";
 
   try {
@@ -259,10 +189,21 @@ let editVideoId = null;
 let deleteVideoId = null;
 
 function openModal(id) {
-  document.getElementById(id).style.display = "flex";
+  const modal = document.getElementById(id);
+  if (!modal) {
+    console.warn(`Modal ${id} not found`);
+    return;
+  }
+  modal.classList.add("show");
 }
+
 function closeModal(id) {
-  document.getElementById(id).style.display = "none";
+  const modal = document.getElementById(id);
+  if (!modal) {
+    console.warn(`Modal ${id} not found`);
+    return;
+  }
+  modal.classList.remove("show");
 }
 
 // Edit video (open modal)
@@ -315,8 +256,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("users-table")) {
     bindUserManagement();
   }
-
+  if (document.getElementById("video-list")) {
   loadFarmVideos();
+}
 });
 
 // === User Management ===
@@ -336,56 +278,34 @@ function bindUserManagement() {
     });
   });
 
-  // Delete buttons
-  document.querySelectorAll(".delete-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      deleteUserId = btn.dataset.id;
-      openModal("deleteModal");
-    });
-  });
-
-  // Confirm Delete
-  const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-  if (confirmDeleteBtn) {
-    confirmDeleteBtn.addEventListener("click", async () => {
-      if (!deleteUserId) return;
-      const formData = new FormData();
-      formData.append("id", deleteUserId);
-
-      try {
-  const response = await fetch("delete-user.php", { method:"POST", body:formData });
-  const result = await response.json();
-  showToast(result.message || "User deleted", result.status);
-  if (result.status === "success") {
-    loadPage("admin-users.php"); // ✅ reload only User Management
-  }
-} catch (err) {
-  showToast("Error deleting user", "error");
-}
-      closeModal("deleteModal");
-    });
-  }
 
   // Handle Edit form
-  const editForm = document.getElementById("editForm");
-  if (editForm) {
-    editForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(editForm);
+const editForm = document.getElementById("editForm");
+if (editForm) {
+  editForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(editForm);
 
-      try {
-  const response = await fetch("update-users.php", { method:"POST", body:formData });
-  const result = await response.json();
-  showToast(result.message || "User updated", result.status);
-  if (result.status === "success") {
-    loadPage("admin-users.php"); // ✅ reload only User Management
-  }
-} catch (err) {
-  showToast("Error updating user", "error");
-}
+    try {
+      const response = await fetch("admin-users-admin.php", { method:"POST", body:formData });
+      const result = await response.json();
+      showToast(result.message || "User updated", result.status);
+
+      if (result.status === "success") {
+        closeModal("editModal");
+        // ✅ Delay reload so toast shows
+        setTimeout(() => {
+          loadPage("admin-users-admin.php");
+        }, 1000);
+      } else {
+        closeModal("editModal");
+      }
+    } catch (err) {
+      showToast("Error updating user", "error");
       closeModal("editModal");
-    });
-  }
+    }
+  });
+}
 }
 
 // Add Categories
@@ -474,6 +394,91 @@ async function confirmDeleteCategory() {
   closeModal("deleteCategoryModal");
 }
 
+// Handle deletion via AJAX
+async function deleteMarketItem(id) {
+  if (confirm("Are you sure you want to remove this product?")) {
+    const formData = new FormData();
+    formData.append('delete_id', id);
+
+    try {
+      const response = await fetch('admin-market-data.php', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+
+      if (typeof showToast === "function") {
+        showToast(result.message, result.status);
+      } else {
+        alert(result.message);
+      }
+
+      if (result.status === 'success') {
+        // Refresh the current page view
+        loadPage('admin-market-data.php');
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+}
+
+function bindMarketForm(form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const res = await fetch("admin-market-data.php", { method: "POST", body: formData });
+    const result = await res.json();
+    showToast(result.message, result.status);
+    if (result.status === "success") loadPage("admin-market-data.php");
+  };
+}
+
+// ✅ Updated: Admin creation now posts to merged page
+function bindCreateAdminForm(form) {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("admin-users-admin.php", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.json();
+
+      if (result.status === "success") {
+        showToast(result.message, "success");
+        form.reset();
+        refreshAdminTable();
+      } else {
+        showToast(result.message, "error");
+        if (result.field) {
+          const errorEl = document.getElementById(result.field + "-error");
+          if (errorEl) errorEl.textContent = result.message;
+        }
+      }
+    } catch (err) {
+      showToast("Error submitting form", "error");
+    }
+  });
+}
+
+// === Tab Navigation ===
+function openTab(tabId) {
+  // Hide all tab contents
+  document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+  // Remove active state from all buttons
+  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  // Show the selected tab
+  const tab = document.getElementById(tabId);
+  if (tab) tab.classList.add("active");
+  // Highlight the clicked button
+  const btn = document.querySelector(`.tab-btn[onclick="openTab('${tabId}')"]`);
+  if (btn) btn.classList.add("active");
+}
+
+
 // Expose globally
 window.loadPage = loadPage;
 window.toggleDropdown = toggleDropdown;
@@ -483,3 +488,5 @@ window.openModal = openModal;
 window.closeModal = closeModal;
 window.confirmEdit = confirmEdit;
 window.confirmDelete = confirmDelete;
+window.deleteMarketItem = deleteMarketItem;
+window.openTab = openTab;

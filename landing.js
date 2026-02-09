@@ -40,6 +40,98 @@ function showToast(message, isError = false) {
   }, 3000);
 }
 
+async function submitAdminLogin() {
+  const email = document.getElementById("admin-email").value;
+  const password = document.getElementById("admin-password").value;
+
+  const res = await fetch("admin-login.php", {
+    method: "POST",
+    body: new URLSearchParams({ email, password })
+  });
+  const result = await res.json();
+
+  if (result.status === "otp_required") {
+  if (result.message.includes("failed")) {
+    showToast(result.message, true); // red
+  } else {
+    showToast(result.message, false); // green
+  }
+  closeModal("adminLoginModal");
+  openModal("adminOtpModal");
+} else {
+    showToast(result.message, result.status);
+    if (result.status === "success") {
+      window.location.href = result.redirect;
+    }
+  }
+}
+
+async function submitAdminOtp() {
+  const otp = document.getElementById("admin-otp-code").value.trim();
+
+  const res = await fetch("admin-login.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "otp=" + encodeURIComponent(otp),
+    credentials: "include"
+  });
+  const result = await res.json();
+
+  if (result.status === "success") {
+    showToast(result.message, false); // green
+    closeModal("adminOtpModal");
+    window.location.href = result.redirect;
+  } else {
+    showToast(result.message, true); // red
+  }
+}
+
+
+async function submitLogin() {
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  const res = await fetch("login.php", {
+    method: "POST",
+    body: new URLSearchParams({ email, password })
+  });
+  const result = await res.json();
+
+  if (result.status === "otp_required") {
+  if (result.message.includes("failed")) {
+    showToast(result.message, true); // red
+  } else {
+    showToast(result.message, false); // green
+  }
+  closeModal("loginModal");
+  openModal("otpModal");
+} else {
+    showToast(result.message, result.status);
+    if (result.status === "success") window.location.href = "dashboard.php";
+  }
+}
+
+async function submitOtp() {
+  const otp = document.getElementById("otp-code").value.trim();
+
+  const res = await fetch("login.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "otp=" + encodeURIComponent(otp),
+    credentials: "include"
+  });
+  const result = await res.json();
+
+  if (result.status === "success") {
+    showToast(result.message, false); // green
+    closeModal("otpModal");
+    window.location.href = result.redirect;
+  } else {
+    showToast(result.message, true); // red
+  }
+}
+
+
 // --- Weather Forecast ---
 async function loadWeather(city, targetId) {
   city = city.trim();
@@ -237,52 +329,6 @@ function submitSignup() {
     }
   })
   .catch(() => showToast("Error checking duplicates", true));
-}
-
-function submitLogin() {
-  const data = {
-    email: document.getElementById("login-email").value.trim(),
-    password: document.getElementById("login-password").value.trim()
-  };
-
-  fetch("login.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-    credentials: "include"
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.status === "success" && res.redirect) {
-      window.location.href = res.redirect;
-    } else {
-      showToast(res.message, true);
-    }
-  })
-  .catch(() => showToast("Error connecting to server", true));
-}
-
-function submitAdminLogin() {
-  const data = {
-    email: document.getElementById("admin-email").value.trim(),
-    password: document.getElementById("admin-password").value.trim()
-  };
-
-  fetch("admin-login.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-    credentials: "include"
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.status === "success" && res.redirect) {
-      window.location.href = res.redirect;
-    } else {
-      showToast(res.message, true);
-    }
-  })
-  .catch(() => showToast("Error connecting to server", true));
 }
 
 // --- AJAX Content Loader ---

@@ -106,6 +106,30 @@ if (isset($_SESSION['user_id'])) {
   </div>
 </div>
 
+<!-- Admin OTP Modal -->
+<div id="adminOtpModal" class="modal">
+  <div class="modal-content">
+    <h2>Enter Admin OTP</h2>
+    <input type="text" id="admin-otp-code" placeholder="6-digit code">
+    <div class="button-row">
+      <button onclick="submitAdminOtp()">Confirm</button>
+      <button class="close" onclick="closeModal('adminOtpModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- OTP Modal -->
+<div id="otpModal" class="modal">
+  <div class="modal-content">
+    <h2>Enter OTP</h2>
+    <input type="text" id="otp-code" placeholder="6-digit code">
+    <div class="button-row">
+      <button onclick="submitOtp()">Confirm</button>
+      <button class="close" onclick="closeModal('otpModal')">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Weather Section -->
 <section id="weather" class="weather-section">
   <h2>🌤 Weather Prediction AI</h2>
