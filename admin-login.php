@@ -65,18 +65,18 @@ if ($row = $result->fetch_assoc()) {
         $_SESSION['otp'] = $otp;
         $_SESSION['otp_expires'] = time() + 300; // 5 minutes expiry
 
-        // ✅ Send OTP via Gmail SMTP
+        // ✅ Send OTP via Gmail SMTP (same config as user login)
         $mail = new PHPMailer(true);
         try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'yourgmail@gmail.com';       // your Gmail
-            $mail->Password = 'your-app-password';        // Gmail App Password
-            $mail->SMTPSecure = 'tls';
-            $mail->Port = 587;
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';              // SMTP server
+        $mail->SMTPAuth = true;
+        $mail->Username = 'bustamante.emerson.royo@gmail.com';     // your Gmail address
+        $mail->Password = 'wrap bovs zrvh vqds';       // Gmail App Password
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
 
-            $mail->setFrom('yourgmail@gmail.com', 'LGU 3 System');
+            $mail->setFrom('bustamante.emerson.royo@gmail.com', 'LGU 3 System');
             $mail->addAddress($row['email'], $row['fullname']);
 
             $mail->isHTML(true);

@@ -19,18 +19,33 @@ if (!isset($_SESSION['user_id'])) {
       <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
     <div class="topbar-right">
-      <div class="profile-dropdown">
-        <span onclick="toggleProfile()" class="profile-name">
-          <?php echo htmlspecialchars($_SESSION['fullname']); ?> ▼
-        </span>
-        <div class="profile-menu" id="profile-menu">
-          <p><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['fullname']); ?></p>
-          <p><strong>Email:</strong> <?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : 'Not available'; ?></p>
-          <a href="edit-profile.php">Edit Profile</a>
-        </div>
-      </div>
-      <button class="logout" onclick="logout()">Log Out</button>
+  <!-- Notification Bell -->
+  <div class="notification-dropdown">
+    <span onclick="toggleNotifications()" class="notification-bell">
+  🔔 <span id="notification-count" class="badge"></span>
+</span>
+    <div class="notification-menu" id="notification-menu">
+      <h4>Notifications</h4>
+      <ul id="notification-list">
+        <!-- Notifications will be injected here -->
+      </ul>
     </div>
+  </div>
+
+  <!-- Profile -->
+  <div class="profile-dropdown">
+    <span onclick="toggleProfile()" class="profile-name">
+      <?php echo htmlspecialchars($_SESSION['fullname']); ?> ▼
+    </span>
+    <div class="profile-menu" id="profile-menu">
+      <p><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['fullname']); ?></p>
+      <p><strong>Email:</strong> <?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : 'Not available'; ?></p>
+      <a href="edit-profile.php">Edit Profile</a>
+    </div>
+  </div>
+
+  <button class="logout" onclick="logout()">Log Out</button>
+</div>
   </div>
 
   <div class="dashboard">

@@ -345,3 +345,106 @@ body {
 .logs-table tr:hover {
   background: #eef2ff;
 }
+
+.notification-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.notification-bell {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.badge {
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  vertical-align: top;
+  margin-left: 4px;
+}
+
+.notification-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: #fff;
+  border: 1px solid #ccc;
+  width: 280px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.notification-menu.show {
+  display: block;
+}
+
+.notification-menu h4 {
+  margin: 0;
+  padding: 10px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  color: #000;
+}
+
+.notification-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-menu ul li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  color: #000; /* ✅ text is black */
+}
+
+.notification-menu ul li a {
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  color: #000; /* black text */
+}
+
+.notification-menu ul li a.unread {
+  border-left: 4px solid #007bff; /* blue accent */
+}
+
+.notification-menu ul li a.read {
+  border-left: 4px solid transparent;
+}
+
+.notification-menu ul li a:hover {
+  background: #e6f0ff;
+  cursor: pointer;
+}
+
+.notification-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-menu::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.notification-menu::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.notification-menu ul li a.view-all {
+  text-align: center;
+  font-weight: bold;
+  background: #f9f9f9;
+  color: #007bff;
+}
+.notification-menu ul li a.view-all:hover {
+  background: #e6f0ff;
+}

@@ -16,6 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_category'])) {
         $stmt->bind_param("s", $name);
         $stmt->execute();
         $stmt->close();
+
+        // ✅ Insert notification
+$msg  = "🐛 New pest category added: $name";
+$link = "pest.php"; // sidebar target
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
         echo json_encode(["status"=>"success","message"=>"Category added"]);
     } else {
         echo json_encode(["status"=>"error","message"=>"Category name required"]);
@@ -38,6 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['youtube_link'])) {
         $stmt->bind_param("ssi", $youtube_id, $title, $category_id);
         $stmt->execute();
         $stmt->close();
+
+        // ✅ Insert notification
+$msg  = "🐛 New pest control guide added: $title";
+$link = "pest.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
         echo json_encode(["status"=>"success","message"=>"Video added"]);
     } else {
         echo json_encode(["status"=>"error","message"=>"Invalid input"]);
@@ -54,6 +72,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_category_id'])) 
         $stmt->bind_param("si", $name, $id);
         $stmt->execute();
         $stmt->close();
+
+        // ✅ Insert notification
+$msg  = "🐛 Pest category updated: $name";
+$link = "pest.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
         echo json_encode(["status"=>"success","message"=>"Category updated"]);
     } else {
         echo json_encode(["status"=>"error","message"=>"Category name required"]);
@@ -68,22 +95,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_category_id'])
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
+
+    // ✅ Insert notification
+$msg  = "🐛 Pest category deleted (ID: $id)";
+$link = "pest.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
     echo json_encode(["status"=>"success","message"=>"Category deleted"]);
     exit;
 }
 
-// Handle delete
+// Handle video delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $id = intval($_POST['delete_id']);
     $stmt = $conn->prepare("DELETE FROM pest_videos WHERE id=?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
+
+    // ✅ Insert notification
+$msg  = "🐛 Pest control guide deleted (ID: $id)";
+$link = "pest.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
     echo json_encode(["status"=>"success","message"=>"Video deleted"]);
     exit;
 }
 
-// Handle edit
+// Handle video edit
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
     $id    = intval($_POST['edit_id']);
     $title = trim($_POST['new_title']);
@@ -91,6 +136,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
     $stmt->bind_param("si", $title, $id);
     $stmt->execute();
     $stmt->close();
+
+    // ✅ Insert notification
+$msg  = "🐛 Pest control guide updated: $title";
+$link = "pest.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
     echo json_encode(["status"=>"success","message"=>"Title updated"]);
     exit;
 }

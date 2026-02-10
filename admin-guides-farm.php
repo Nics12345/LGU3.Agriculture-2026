@@ -21,6 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['youtube_link'])) {
         $stmt->bind_param("ss", $youtube_id, $title);
         $stmt->execute();
         $stmt->close();
+
+// ✅ Insert notification with link
+$msg  = "📘 New farm guide added: $title";
+$link = "guides.php"; // sidebar target
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
         echo json_encode(["status"=>"success","message"=>"Video added"]);
     } else {
         echo json_encode(["status"=>"error","message"=>"Invalid YouTube link"]);
@@ -35,6 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
+
+// ✅ Insert notification with link
+$msg  = "📘 Farm guide deleted (ID: $id)";
+$link = "guides.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
     echo json_encode(["status"=>"success","message"=>"Video deleted"]);
     exit;
 }
@@ -47,6 +64,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
     $stmt->bind_param("si", $title, $id);
     $stmt->execute();
     $stmt->close();
+
+    // ✅ Insert notification with link
+$msg  = "📘 Farm guide updated: $title";
+$link = "guides.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
+
     echo json_encode(["status"=>"success","message"=>"Title updated"]);
     exit;
 }

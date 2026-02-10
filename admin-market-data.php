@@ -13,6 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
+        // ✅ Insert notification with link
+        $msg  = "📈 Market product removed (ID: $id)";
+        $link = "user-market-data.php"; // sidebar target
+        $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+        $nstmt->bind_param("ss", $msg, $link);
+        $nstmt->execute();
+        $nstmt->close();
+
         echo json_encode(["status" => "success", "message" => "Product removed from market"]);
     } else {
         echo json_encode(["status" => "error", "message" => "Failed to delete"]);
@@ -22,15 +30,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 
 // --- 2. HANDLE ADD ACTION ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_name'])) {
-    $name = trim($_POST['product_name']);
-    $price = floatval($_POST['price']);
-    $unit = trim($_POST['unit']);
+    $name   = trim($_POST['product_name']);
+    $price  = floatval($_POST['price']);
+    $unit   = trim($_POST['unit']);
     $status = $_POST['status'];
 
     $stmt = $conn->prepare("INSERT INTO market_data (product_name, price, unit, status) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("sdss", $name, $price, $unit, $status);
     
     if ($stmt->execute()) {
+        // ✅ Insert notification with link
+        $msg  = "📈 Market data updated: $name now ₱" . number_format($price, 2) . " $unit ($status)";
+        $link = "user-market-data.php"; // sidebar target
+        $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+        $nstmt->bind_param("ss", $msg, $link);
+        $nstmt->execute();
+        $nstmt->close();
+
         echo json_encode(["status" => "success", "message" => "Market price updated"]);
     } else {
         echo json_encode(["status" => "error", "message" => "Database error"]);

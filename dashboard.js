@@ -15,26 +15,6 @@ function logout() {
   window.location.href = "logout.php";
 }
 
-// Load section content dynamically with persistence
-function loadSection(page) {
-  const container = document.getElementById("dashboard-content");
-  container.innerHTML = "<p>Loading...</p>";
-
-  fetch(page)
-    .then(response => {
-      if (!response.ok) throw new Error("Network error");
-      return response.text();
-    })
-    .then(html => {
-      container.innerHTML = html;
-      // Save the last loaded section in localStorage
-      localStorage.setItem("lastSection", page);
-    })
-    .catch(err => {
-      container.innerHTML = "<p>Error loading content.</p>";
-      console.error(err);
-    });
-}
 
 // Restore last section on page load
 window.addEventListener("DOMContentLoaded", () => {
@@ -163,6 +143,75 @@ function loadSection(page) {
       console.error(err);
     });
 }
+
+function toggleNotifications() {
+  const menu = document.getElementById("notification-menu");
+  menu.classList.toggle("show");
+}
+
+async function loadNotifications() {
+  try {
+    const res = await fetch("notifications.php");
+    const data = await res.json();
+
+    const list = document.getElementById("notification-list");
+    const badge = document.getElementById("notification-count");
+
+    list.innerHTML = "";
+    let unreadCount = 0;
+
+    if (data.length === 0) {
+      list.innerHTML = "<li>No notifications</li>";
+      badge.textContent = "";
+    } else {
+      data.forEach(n => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a id="notif-${n.id}" href="#" 
+                          class="${n.is_read ? 'read' : 'unread'}">${n.message}</a>`;
+        li.querySelector("a").addEventListener("click", (e) => {
+          e.preventDefault();
+          loadSection(n.link);        // ✅ load sidebar tab
+          markNotificationRead(n.id); // mark as read
+        });
+        list.appendChild(li);
+        if (!n.is_read) unreadCount++;
+      });
+      badge.textContent = unreadCount > 0 ? unreadCount : "";
+    }
+    // After rendering notifications
+const viewAll = document.createElement("li");
+viewAll.innerHTML = `<a href="#" class="view-all">View All Notifications</a>`;
+viewAll.querySelector("a").addEventListener("click", (e) => {
+  e.preventDefault();
+  loadSection("notifications-archive.php"); // ✅ create this file
+});
+list.appendChild(viewAll);
+  } catch (err) {
+    console.error("Error loading notifications", err);
+  }
+}
+
+function markNotificationRead(id) {
+  fetch("mark-notifications-read.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "id=" + encodeURIComponent(id)
+  }).then(() => {
+    const link = document.querySelector(`#notif-${id}`);
+    if (link) {
+      link.classList.remove("unread");
+      link.classList.add("read");
+    }
+    // ✅ Update badge count
+    const badge = document.getElementById("notification-count");
+    const unreadLinks = document.querySelectorAll("#notification-list a.unread");
+    badge.textContent = unreadLinks.length > 0 ? unreadLinks.length : "";
+  });
+}
+
+// Poll every 5 seconds for updates
+setInterval(loadNotifications, 5000);
+document.addEventListener("DOMContentLoaded", loadNotifications);
 
 // Restore last section on page load
 window.addEventListener("DOMContentLoaded", () => {
