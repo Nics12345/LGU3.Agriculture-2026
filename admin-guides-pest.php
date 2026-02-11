@@ -1,271 +1,214 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_id'])) {
-  echo "<p style='color:red;'>Access denied.</p>";
-  exit;
+    echo "<p style='color:red;'>Access denied.</p>";
+    exit;
 }
-
 include 'db.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// Handle category creation
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_category'])) {
-    $name = trim($_POST['new_category']);
-    if ($name !== '') {
-        $stmt = $conn->prepare("INSERT INTO pest_categories (name) VALUES (?)");
-        $stmt->bind_param("s", $name);
-        $stmt->execute();
-        $stmt->close();
+// Handle guide upload
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
+    $title = trim($_POST['title'] ?? 'Untitled Video');
+    $description = trim($_POST['description'] ?? '');
 
-        // ✅ Insert notification
-$msg  = "🐛 New pest category added: $name";
-$link = "pest.php"; // sidebar target
-$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-$nstmt->bind_param("ss", $msg, $link);
-$nstmt->execute();
-$nstmt->close();
+    $videoPath = null;
+    $youtubeId = null;
 
-        echo json_encode(["status"=>"success","message"=>"Category added"]);
-    } else {
-        echo json_encode(["status"=>"error","message"=>"Category name required"]);
+    // File upload
+    if (!empty($_FILES['video']['name'])) {
+        $uploadDir = __DIR__ . "/uploads/pest_videos/";
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+        $fileName = time() . "_" . basename($_FILES['video']['name']);
+        $filePath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($_FILES['video']['tmp_name'], $filePath)) {
+            $videoPath = $fileName;
+        } else {
+            echo json_encode(["status"=>"error","message"=>"Upload failed"]);
+            exit;
+        }
     }
-    exit;
-}
 
-// Handle video add
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['youtube_link'])) {
-    $link  = trim($_POST['youtube_link']);
-    $title = trim($_POST['title'] ?? '');
-    $category_id = intval($_POST['category_id'] ?? 0);
-
-    preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^\&\?\/]+)/', $link, $matches);
-    $youtube_id = $matches[1] ?? '';
-
-    if ($youtube_id !== '' && $category_id > 0) {
-        if ($title === '') $title = "Untitled Video";
-        $stmt = $conn->prepare("INSERT INTO pest_videos (youtube_id, title, category_id) VALUES (?, ?, ?)");
-        $stmt->bind_param("ssi", $youtube_id, $title, $category_id);
-        $stmt->execute();
-        $stmt->close();
-
-        // ✅ Insert notification
-$msg  = "🐛 New pest control guide added: $title";
-$link = "pest.php";
-$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-$nstmt->bind_param("ss", $msg, $link);
-$nstmt->execute();
-$nstmt->close();
-
-        echo json_encode(["status"=>"success","message"=>"Video added"]);
-    } else {
-        echo json_encode(["status"=>"error","message"=>"Invalid input"]);
+    // YouTube link
+    if (!empty($_POST['youtube_link'])) {
+        $link = trim($_POST['youtube_link']);
+        preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^\&\?\/]+)/', $link, $matches);
+        $youtubeId = $matches[1] ?? '';
+        if ($youtubeId === '') {
+            echo json_encode(["status"=>"error","message"=>"Invalid YouTube link"]);
+            exit;
+        }
     }
-    exit;
-}
 
-// Handle category edit
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_category_id'])) {
-    $id   = intval($_POST['edit_category_id']);
-    $name = trim($_POST['new_category_name']);
-    if ($name !== '') {
-        $stmt = $conn->prepare("UPDATE pest_categories SET name=? WHERE id=?");
-        $stmt->bind_param("si", $name, $id);
-        $stmt->execute();
-        $stmt->close();
-
-        // ✅ Insert notification
-$msg  = "🐛 Pest category updated: $name";
-$link = "pest.php";
-$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-$nstmt->bind_param("ss", $msg, $link);
-$nstmt->execute();
-$nstmt->close();
-
-        echo json_encode(["status"=>"success","message"=>"Category updated"]);
-    } else {
-        echo json_encode(["status"=>"error","message"=>"Category name required"]);
+    if (!$videoPath && !$youtubeId) {
+        echo json_encode(["status"=>"error","message"=>"Please upload a file or provide a YouTube link"]);
+        exit;
     }
-    exit;
-}
 
-// Handle category delete
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_category_id'])) {
-    $id = intval($_POST['delete_category_id']);
-    $stmt = $conn->prepare("DELETE FROM pest_categories WHERE id=?");
-    $stmt->bind_param("i", $id);
+    $stmt = $conn->prepare("INSERT INTO pest_videos (title, description, video_path, youtube_id) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $title, $description, $videoPath, $youtubeId);
     $stmt->execute();
     $stmt->close();
 
-    // ✅ Insert notification
-$msg  = "🐛 Pest category deleted (ID: $id)";
-$link = "pest.php";
-$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-$nstmt->bind_param("ss", $msg, $link);
-$nstmt->execute();
-$nstmt->close();
+    $msg  = "🐛 New pest guide added: $title";
+    $link = "pest.php";
+    $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+    $nstmt->bind_param("ss", $msg, $link);
+    $nstmt->execute();
+    $nstmt->close();
 
-    echo json_encode(["status"=>"success","message"=>"Category deleted"]);
+    echo json_encode(["status"=>"success","message"=>"Guide added"]);
     exit;
 }
 
-// Handle video delete
+// Handle delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $id = intval($_POST['delete_id']);
+    $stmt = $conn->prepare("SELECT video_path FROM pest_videos WHERE id=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($row = $res->fetch_assoc()) {
+        if (!empty($row['video_path'])) {
+            $filePath = __DIR__ . "/uploads/pest_videos/" . $row['video_path'];
+            if (file_exists($filePath)) unlink($filePath);
+        }
+    }
+    $stmt->close();
+
     $stmt = $conn->prepare("DELETE FROM pest_videos WHERE id=?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
 
-    // ✅ Insert notification
-$msg  = "🐛 Pest control guide deleted (ID: $id)";
-$link = "pest.php";
-$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-$nstmt->bind_param("ss", $msg, $link);
-$nstmt->execute();
-$nstmt->close();
+    $msg  = "🐛 Pest guide deleted (ID: $id)";
+    $link = "pest.php";
+    $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+    $nstmt->bind_param("ss", $msg, $link);
+    $nstmt->execute();
+    $nstmt->close();
 
-    echo json_encode(["status"=>"success","message"=>"Video deleted"]);
+    echo json_encode(["status"=>"success","message"=>"Guide deleted"]);
     exit;
 }
 
-// Handle video edit
+// Handle edit
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
     $id    = intval($_POST['edit_id']);
     $title = trim($_POST['new_title']);
-    $stmt  = $conn->prepare("UPDATE pest_videos SET title=? WHERE id=?");
-    $stmt->bind_param("si", $title, $id);
+    $description = trim($_POST['new_description'] ?? '');
+
+    $stmt  = $conn->prepare("UPDATE pest_videos SET title=?, description=? WHERE id=?");
+    $stmt->bind_param("ssi", $title, $description, $id);
     $stmt->execute();
     $stmt->close();
 
-    // ✅ Insert notification
-$msg  = "🐛 Pest control guide updated: $title";
-$link = "pest.php";
-$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-$nstmt->bind_param("ss", $msg, $link);
-$nstmt->execute();
-$nstmt->close();
+    $msg  = "🐛 Pest guide updated: $title";
+    $link = "pest.php";
+    $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+    $nstmt->bind_param("ss", $msg, $link);
+    $nstmt->execute();
+    $nstmt->close();
 
-    echo json_encode(["status"=>"success","message"=>"Title updated"]);
+    echo json_encode(["status"=>"success","message"=>"Guide updated"]);
     exit;
 }
 ?>
 
+<link rel="stylesheet" href="admin-guides-pest.css">
+
 <div class="guides-container">
   <h2>🐛 Pest Control Guides</h2>
 
-  <!-- Add Category Form -->
+  <!-- Unified Upload Form -->
   <div class="add-video-form">
-    <form id="add-category-form">
-      <label>New Category:</label>
-      <input type="text" name="new_category" required placeholder="Enter category name">
-      <button type="submit" class="btn btn-primary">Add Category</button>
+    <form id="add-pest-video-form" enctype="multipart/form-data" method="POST">
+      <label>Title:</label>
+      <input type="text" name="title" required>
+      <label>Description:</label>
+      <textarea name="description" rows="4"></textarea>
+      <label>Upload Video (optional):</label>
+      <input type="file" name="video" accept="video/*">
+      <label>YouTube Link (optional):</label>
+      <input type="text" name="youtube_link" placeholder="Paste YouTube link">
+      <button type="submit" class="btn btn-primary">Add Guide</button>
     </form>
   </div>
 
-  <!-- Add Video Form -->
-  <div class="add-video-form">
-    <form id="add-video-form">
-      <label>YouTube Link:</label>
-      <input type="text" name="youtube_link" required placeholder="Paste YouTube link here">
-      <label>Title (optional):</label>
-      <input type="text" name="title" placeholder="Enter video title">
-      <label>Category:</label>
-      <select name="category_id" required>
-        <option value="">-- Select Category --</option>
-        <?php
-        $cats = $conn->query("SELECT id,name FROM pest_categories ORDER BY name ASC");
-        while ($cat = $cats->fetch_assoc()) {
-            echo "<option value='{$cat['id']}'>".htmlspecialchars($cat['name'])."</option>";
+  <!-- Render existing guides -->
+  <div class="video-cards">
+    <?php
+    $videos = $conn->query("SELECT id,title,description,video_path,youtube_id FROM pest_videos ORDER BY created_at DESC");
+    if ($videos->num_rows > 0) {
+        while ($video = $videos->fetch_assoc()) {
+            echo "<div class='video-card'>";
+            if (!empty($video['video_path'])) {
+                echo "<img src='assets/video-thumb.png' alt='Thumbnail'
+                        onclick='openModal(\"file\", \"uploads/pest_videos/{$video['video_path']}\",
+                        \"".htmlspecialchars($video['title'], ENT_QUOTES)."\",
+                        \"".htmlspecialchars($video['description'], ENT_QUOTES)."\")'>";
+            } elseif (!empty($video['youtube_id'])) {
+                echo "<img src='https://img.youtube.com/vi/{$video['youtube_id']}/hqdefault.jpg' alt='Thumbnail'
+                        onclick='openModal(\"youtube\", \"{$video['youtube_id']}\",
+                        \"".htmlspecialchars($video['title'], ENT_QUOTES)."\",
+                        \"".htmlspecialchars($video['description'], ENT_QUOTES)."\")'>";
+            }
+            echo "<h3>".htmlspecialchars($video['title'])."</h3>";
+            echo "<p>".nl2br(htmlspecialchars($video['description']))."</p>";
+            echo "<div class='video-actions'>
+                    <button onclick='openDeletePestModal({$video['id']})' class='btn btn-danger'>Delete</button>
+                    <button onclick='openEditPestModal({$video['id']}, \"".htmlspecialchars($video['title'], ENT_QUOTES)."\", \"".htmlspecialchars($video['description'], ENT_QUOTES)."\")' class='btn btn-warning'>Edit</button>
+                  </div>";
+            echo "</div>";
         }
-        ?>
-      </select>
-      <button type="submit" class="btn btn-primary">Add Video</button>
-    </form>
+    } else {
+        echo "<div class='no-videos'><p>🚫 No pest guides yet.</p></div>";
+    }
+    ?>
   </div>
-
-  <!-- Render existing videos grouped by category -->
-  <?php
-  $cats = $conn->query("SELECT id,name FROM pest_categories ORDER BY name ASC");
-  if ($cats->num_rows > 0) {
-      while ($cat = $cats->fetch_assoc()) {
-          echo "<h3 style='margin-top:20px;'>🎬 ".htmlspecialchars($cat['name'])."</h3>";
-          echo "<div class='category-actions'>
-          <button onclick='editCategory({$cat['id']}, \"".htmlspecialchars($cat['name'], ENT_QUOTES)."\")' class='btn btn-warning'>Edit Category</button>
-          <button onclick='deleteCategory({$cat['id']})' class='btn btn-danger'>Delete Category</button>
-          </div>";
-          echo "<div class='video-cards'>";
-          $videos = $conn->query("SELECT id,youtube_id,title FROM pest_videos WHERE category_id={$cat['id']} ORDER BY created_at DESC");
-          if ($videos->num_rows > 0) {
-              while ($video = $videos->fetch_assoc()) {
-                  $thumb = "https://img.youtube.com/vi/{$video['youtube_id']}/hqdefault.jpg";
-                  $url   = "https://www.youtube.com/watch?v={$video['youtube_id']}";
-                  echo "
-                  <div class='video-card'>
-                    <a href='{$url}' target='_blank'>
-                      <img src='{$thumb}' alt='".htmlspecialchars($video['title'], ENT_QUOTES)."'>
-                      <h3>".htmlspecialchars($video['title'])."</h3>
-                    </a>
-                    <div class='video-actions'>
-                      <button onclick='deleteVideo({$video['id']})' class='btn btn-danger'>Delete</button>
-                      <button onclick='editVideo({$video['id']}, \"".htmlspecialchars($video['title'], ENT_QUOTES)."\")' class='btn btn-warning'>Edit Title</button>
-                    </div>
-                  </div>
-                  ";
-              }
-          } else {
-              echo "<p style='color:#777;'>🚫 No videos in this category yet.</p>";
-          }
-          echo "</div>";
-      }
-  } else {
-      echo "<p style='text-align:center; color:#777;'>🚫 No categories yet. Please add one.</p>";
-  }
-  ?>
 </div>
 
-<!-- Modals same as before -->
-<div id="editModal" class="modal">
+<!-- Video Modal -->
+<div id="videoModal" class="modal">
   <div class="modal-content">
-    <h3>Edit Video Title</h3>
-    <input type="text" id="editTitleInput" style="width:100%; padding:8px;">
+    <h3 id="modalTitle"></h3>
+    <div id="modalVideoContainer"></div>
+    <p id="modalDesc"></p>
     <div class="modal-actions">
-      <button class="btn btn-warning" onclick="confirmEdit()">Save</button>
-      <button class="btn btn-danger" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="closeModal()">Close</button>
     </div>
   </div>
 </div>
 
-<div id="deleteModal" class="modal">
+<!-- Delete Pest Guide Modal -->
+<div id="deletePestModal" class="modal">
   <div class="modal-content">
     <h3>Confirm Delete</h3>
-    <p>Are you sure you want to delete this video?</p>
+    <p>Are you sure you want to delete this pest guide?</p>
     <div class="modal-actions">
-      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
-      <button class="btn btn-warning" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeletePest()">Delete</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('deletePestModal').classList.remove('show')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Edit Category Modal -->
-<div id="editCategoryModal" class="modal">
+<!-- Edit Pest Guide Modal -->
+<div id="editPestModal" class="modal">
   <div class="modal-content">
-    <h3>Edit Category</h3>
-    <input type="text" id="editCategoryInput" style="width:100%; padding:8px;">
+    <h3>Edit Pest Guide</h3>
+    <label>Title:</label>
+    <input type="text" id="editPestTitle">
+    <label>Description:</label>
+    <textarea id="editPestDesc" rows="4"></textarea>
     <div class="modal-actions">
-      <button class="btn btn-warning" onclick="confirmEditCategory()">Save</button>
-      <button class="btn btn-danger" onclick="closeModal('editCategoryModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmEditPest()">Save</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('editPestModal').classList.remove('show')">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- Delete Category Modal -->
-<div id="deleteCategoryModal" class="modal">
-  <div class="modal-content">
-    <h3>Confirm Delete</h3>
-    <p>Are you sure you want to delete this category? All videos inside will also be deleted.</p>
-    <div class="modal-actions">
-      <button class="btn btn-danger" onclick="confirmDeleteCategory()">Delete</button>
-      <button class="btn btn-warning" onclick="closeModal('deleteCategoryModal')">Cancel</button>
-    </div>
-  </div>
-</div>
+<!-- Link the pest-specific CSS and JS -->
+<link rel="stylesheet" href="admin-guides-pest.css">
+<script src="admin-guides-pest.js"></script>

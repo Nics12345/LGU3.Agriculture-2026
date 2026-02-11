@@ -23,9 +23,6 @@ if (!isset($_SESSION['admin_id'])) {
   <div class="dashboard">
     <div class="sidebar">
       <a href="#" onclick="loadPage('admin-users-admin.php')">👥 User & Admin Management</a>
-
-      <a href="#" onclick="loadPage('admin-market-data.php')">📈 Market Data</a>
-
       <a href="#" onclick="toggleDropdown()">📚 Guides Management ▾</a>
       <a href="#" onclick="loadPage('admin-guides-pest.php')">🐛 Pest Guides</a>
       <a href="#" onclick="loadPage('admin-guides-farm.php')">🌾 Farm Guides</a>

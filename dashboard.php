@@ -56,6 +56,7 @@ if (!isset($_SESSION['user_id'])) {
 </div>
       <a href="#" onclick="loadSection('guides.php')">📘 Farming Guides</a>
       <a href="#" onclick="loadSection('pest.php')">🐛 Pest Control Guides</a>
+      <a href="#" onclick="loadSection('seeker.php')">Roboflow Seeker</a>
       <a href="#" onclick="loadSection('weather.php')">🌤 Weather Forecast</a>
     </div>
       <div class="content" id="dashboard-content">
@@ -65,5 +66,7 @@ if (!isset($_SESSION['user_id'])) {
   </div>
   <!-- External JS -->
   <script src="dashboard.js?v=<?php echo time(); ?>" defer></script>
+<script src="seeker.js"></script>
+
 </body>
 </html>

@@ -19,9 +19,6 @@ function loadPage(page) {
       const videoForm = document.getElementById("add-video-form");
       if (videoForm) bindAddVideoForm(videoForm);
 
-      const categoryForm = document.getElementById("add-category-form");
-      if (categoryForm) bindAddCategoryForm(categoryForm);
-
       const pestVideoForm = document.getElementById("add-pest-video-form");
       if (pestVideoForm) bindAddPestVideoForm(pestVideoForm);
 
@@ -54,10 +51,12 @@ function bindAddVideoForm(form) {
       showToast(result.message, result.status);
       if (result.status === "success") {
         form.reset();
-        loadFarmVideos(); // refresh list
+        // ✅ Refresh both lists dynamically
+        loadFarmVideos();
+        loadFarmImages();
       }
     } catch (err) {
-      showToast("Error adding video", "error");
+      showToast("Error adding guide", "error");
     }
   });
 }
@@ -141,13 +140,45 @@ function bindCreateAdminForm(form) {
   });
 }
 
+async function loadFarmImages() {
+  const container = document.getElementById("image-list");
+  if (!container) return;
+
+  container.innerHTML = "<p class='loading'>🔄 Updating images...</p>";
+
+  try {
+    const response = await fetch("admin-guides-farm.php?list_images=1");
+    const images = await response.json();
+    container.innerHTML = "";
+
+    if (images.length > 0) {
+      images.forEach(img => {
+        const card = document.createElement("div");
+        card.className = "image-card";
+        card.innerHTML = `
+          <img src="${img.file_path}" alt="${img.title}">
+          <h3>${img.title}</h3>
+          <p>${img.description || ""}</p>
+          <div class="video-actions">
+            <button onclick="deleteImage(${img.id})" class="btn btn-danger">Delete</button>
+            <button onclick="editImage(${img.id}, '${img.title.replace(/'/g,"&#39;")}', '${(img.description || "").replace(/'/g,"&#39;")}')" class="btn btn-warning">Edit</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    } else {
+      container.innerHTML = "<p style='text-align:center; color:#777;'>🚫 No farm images available yet.</p>";
+    }
+  } catch (err) {
+    container.innerHTML = "<p style='text-align:center; color:red;'>❌ Error loading images.</p>";
+    console.error("Error loading images", err);
+  }
+}
+
 // Load farm videos dynamically
 async function loadFarmVideos() {
   const container = document.getElementById("video-list");
-  if (!container) {
-    console.warn("video-list container not found");
-    return;
-  }
+  if (!container) return;
 
   container.innerHTML = "<p class='loading'>🔄 Updating videos...</p>";
 
@@ -158,21 +189,37 @@ async function loadFarmVideos() {
 
     if (videos.length > 0) {
       videos.forEach(video => {
-        const thumb = `https://img.youtube.com/vi/${video.youtube_id}/hqdefault.jpg`;
-        const url = `https://www.youtube.com/watch?v=${video.youtube_id}`;
-
         const card = document.createElement("div");
         card.className = "video-card";
-        card.innerHTML = `
-          <a href="${url}" target="_blank">
-            <img src="${thumb}">
+
+        if (video.youtube_id) {
+          const thumb = `https://img.youtube.com/vi/${video.youtube_id}/hqdefault.jpg`;
+          const url = `https://www.youtube.com/watch?v=${video.youtube_id}`;
+          card.innerHTML = `
+            <a href="${url}" target="_blank">
+              <img src="${thumb}">
+              <h3>${video.title}</h3>
+              <p>${video.description || ""}</p>
+            </a>
+            <div class="video-actions">
+              <button onclick="deleteVideo(${video.id})" class="btn btn-danger">Delete</button>
+              <button onclick="editVideo(${video.id}, '${video.title.replace(/'/g,"&#39;")}', '${(video.description || "").replace(/'/g,"&#39;")}')" class="btn btn-warning">Edit</button>
+            </div>
+          `;
+        } else if (video.file_path) {
+          card.innerHTML = `
+            <video width="100%" controls>
+              <source src="${video.file_path}" type="video/mp4">
+            </video>
             <h3>${video.title}</h3>
-          </a>
-          <div class="video-actions">
-            <button onclick="deleteVideo(${video.id})" class="btn btn-danger">Delete</button>
-            <button onclick="editVideo(${video.id}, '${video.title.replace(/'/g,"&#39;")}')" class="btn btn-warning">Edit Title</button>
-          </div>
-        `;
+            <p>${video.description || ""}</p>
+            <div class="video-actions">
+              <button onclick="deleteVideo(${video.id})" class="btn btn-danger">Delete</button>
+              <button onclick="editVideo(${video.id}, '${video.title.replace(/'/g,"&#39;")}', '${(video.description || "").replace(/'/g,"&#39;")}')" class="btn btn-warning">Edit</button>
+            </div>
+          `;
+        }
+
         container.appendChild(card);
       });
     } else {
@@ -184,9 +231,50 @@ async function loadFarmVideos() {
   }
 }
 
-// === Modal Helpers ===
+// Track IDs for edit/delete
+let editType = null;
 let editVideoId = null;
+let editImageId = null;
 let deleteVideoId = null;
+let deleteImageId = null;
+
+
+function editImage(id, currentTitle) {
+  editImageId = id;
+  document.getElementById("editTitleInput").value = currentTitle;
+  openModal("editModal"); // reuse same modal
+}
+
+async function confirmEditImage() {
+  const newTitle = document.getElementById("editTitleInput").value.trim();
+  if (newTitle === "") return;
+  const formData = new FormData();
+  formData.append("edit_image_id", editImageId);
+  formData.append("new_title", newTitle);
+
+  const response = await fetch("admin-guides-farm.php", { method:"POST", body:formData });
+  const result = await response.json();
+  showToast(result.message, result.status);
+  if (result.status === "success") loadFarmImages();
+  closeModal("editModal");
+}
+
+function deleteImage(id) {
+  deleteImageId = id;
+  openModal("deleteModal"); // reuse same modal
+}
+
+async function confirmDeleteImage() {
+  const formData = new FormData();
+  formData.append("delete_image_id", deleteImageId);
+
+  const response = await fetch("admin-guides-farm.php", { method:"POST", body:formData });
+  const result = await response.json();
+  showToast(result.message, result.status);
+  if (result.status === "success") loadFarmImages();
+  closeModal("deleteModal");
+}
+
 
 function openModal(id) {
   const modal = document.getElementById(id);
@@ -206,20 +294,27 @@ function closeModal(id) {
   modal.classList.remove("show");
 }
 
-// Edit video (open modal)
-function editVideo(id, currentTitle) {
+// Open edit modal for video
+function editVideo(id, currentTitle, currentDesc) {
+  editType = "video";
   editVideoId = id;
   document.getElementById("editTitleInput").value = currentTitle;
+  document.getElementById("editDescInput").value = currentDesc;
+  document.getElementById("confirmEditBtn").onclick = confirmEdit;
   openModal("editModal");
 }
 
-// Confirm edit
+// Confirm edit video
 async function confirmEdit() {
   const newTitle = document.getElementById("editTitleInput").value.trim();
+  const newDesc = document.getElementById("editDescInput").value.trim();
   if (newTitle === "") return;
+
   const formData = new FormData();
   formData.append("edit_id", editVideoId);
   formData.append("new_title", newTitle);
+  formData.append("new_description", newDesc);
+
   const response = await fetch("admin-guides-farm.php", { method:"POST", body:formData });
   const result = await response.json();
   showToast(result.message, result.status);
@@ -227,20 +322,76 @@ async function confirmEdit() {
   closeModal("editModal");
 }
 
-// Delete video (open modal)
+// Delete video
 function deleteVideo(id) {
   deleteVideoId = id;
+  document.getElementById("deleteMessage").textContent = "Are you sure you want to delete this video guide?";
+  document.getElementById("confirmDeleteBtn").onclick = confirmDelete;
   openModal("deleteModal");
 }
 
-// Confirm delete
+// Confirm delete video
 async function confirmDelete() {
   const formData = new FormData();
   formData.append("delete_id", deleteVideoId);
   const response = await fetch("admin-guides-farm.php", { method:"POST", body:formData });
   const result = await response.json();
   showToast(result.message, result.status);
-  if (result.status === "success") loadFarmVideos();
+  if (result.status === "success") {
+    loadFarmVideos(); // ✅ refresh videos only
+  }
+  closeModal("deleteModal");
+}
+
+
+// Open edit modal for image
+function editImage(id, currentTitle, currentDesc) {
+  editType = "image";
+  editImageId = id;
+  document.getElementById("editTitleInput").value = currentTitle;
+  document.getElementById("editDescInput").value = currentDesc;
+  document.getElementById("confirmEditBtn").onclick = confirmEditImage;
+  openModal("editModal");
+}
+
+
+// Confirm edit image
+async function confirmEditImage() {
+  const newTitle = document.getElementById("editTitleInput").value.trim();
+  const newDesc = document.getElementById("editDescInput").value.trim();
+  if (newTitle === "") return;
+
+  const formData = new FormData();
+  formData.append("edit_image_id", editImageId);
+  formData.append("new_title", newTitle);
+  formData.append("new_description", newDesc);
+
+  const response = await fetch("admin-guides-farm.php", { method:"POST", body:formData });
+  const result = await response.json();
+  showToast(result.message, result.status);
+  if (result.status === "success") loadFarmImages();
+  closeModal("editModal");
+}
+
+
+// Delete image
+function deleteImage(id) {
+  deleteImageId = id;
+  document.getElementById("deleteMessage").textContent = "Are you sure you want to delete this image guide?";
+  document.getElementById("confirmDeleteBtn").onclick = confirmDeleteImage;
+  openModal("deleteModal");
+}
+
+// Confirm Delete Image
+async function confirmDeleteImage() {
+  const formData = new FormData();
+  formData.append("delete_image_id", deleteImageId);
+  const response = await fetch("admin-guides-farm.php", { method:"POST", body:formData });
+  const result = await response.json();
+  showToast(result.message, result.status);
+  if (result.status === "success") {
+    loadFarmImages(); // ✅ refresh images only
+  }
   closeModal("deleteModal");
 }
 
@@ -251,7 +402,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const videoForm = document.getElementById("add-video-form");
   if (videoForm) bindAddVideoForm(videoForm);
-
+  
+  if (document.getElementById("image-list")) {
+  loadFarmImages();
+}
   // ✅ Bind User Management if the table exists
   if (document.getElementById("users-table")) {
     bindUserManagement();
@@ -308,29 +462,6 @@ if (editForm) {
 }
 }
 
-// Add Categories
-function bindAddCategoryForm(form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch("admin-guides-pest.php", {
-        method: "POST",
-        body: formData
-      });
-      const result = await response.json();
-      showToast(result.message, result.status);
-
-      if (result.status === "success") {
-        // Reload Pest Guides section only
-        loadPage("admin-guides-pest.php");
-      }
-    } catch (err) {
-      showToast("Error adding category", "error");
-    }
-  });
-}
 
 function bindAddPestVideoForm(form) {
   form.addEventListener("submit", async (e) => {
@@ -354,45 +485,6 @@ function bindAddPestVideoForm(form) {
   });
 }
 
-// Edit Categories
-let editCategoryId = null;
-let deleteCategoryId = null;
-
-function editCategory(id, currentName) {
-  editCategoryId = id;
-  document.getElementById("editCategoryInput").value = currentName;
-  openModal("editCategoryModal");
-}
-
-async function confirmEditCategory() {
-  const newName = document.getElementById("editCategoryInput").value.trim();
-  if (newName === "") return;
-  const formData = new FormData();
-  formData.append("edit_category_id", editCategoryId);
-  formData.append("new_category_name", newName);
-
-  const response = await fetch("admin-guides-pest.php", { method:"POST", body:formData });
-  const result = await response.json();
-  showToast(result.message, result.status);
-  if (result.status === "success") loadPage("admin-guides-pest.php");
-  closeModal("editCategoryModal");
-}
-
-function deleteCategory(id) {
-  deleteCategoryId = id;
-  openModal("deleteCategoryModal");
-}
-
-async function confirmDeleteCategory() {
-  const formData = new FormData();
-  formData.append("delete_category_id", deleteCategoryId);
-
-  const response = await fetch("admin-guides-pest.php", { method:"POST", body:formData });
-  const result = await response.json();
-  showToast(result.message, result.status);
-  if (result.status === "success") loadPage("admin-guides-pest.php");
-  closeModal("deleteCategoryModal");
-}
 
 // Handle deletion via AJAX
 async function deleteMarketItem(id) {
@@ -478,8 +570,90 @@ function openTab(tabId) {
   if (btn) btn.classList.add("active");
 }
 
+// Bind Pest Guide Upload Form
+const pestVideoForm = document.getElementById("add-pest-video-form");
+if (pestVideoForm) bindAddPestVideoForm(pestVideoForm);
 
-// Expose globally
+function bindAddPestVideoForm(form) {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("admin-guides-pest.php", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.json();
+
+      showToast(result.message, result.status);
+
+      if (result.status === "success") {
+        // reload pest admin page to show new guide
+        loadPage("admin-guides-pest.php");
+      }
+    } catch (err) {
+      console.error("Pest upload error:", err);
+      showToast("Error adding pest guide", "error");
+    }
+  });
+}
+
+// Delete Pest Guide
+function deleteVideo(id) {
+  if (!confirm("Delete this pest guide?")) return;
+
+  const formData = new FormData();
+  formData.append("delete_id", id);
+
+  fetch("admin-guides-pest.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(result => {
+      showToast(result.message, result.status);
+      if (result.status === "success") {
+        loadPage("admin-guides-pest.php");
+      }
+    })
+    .catch(err => {
+      console.error("Delete error:", err);
+      showToast("Error deleting pest guide", "error");
+    });
+}
+
+// Edit Pest Guide
+function editVideo(id, currentTitle, currentDesc) {
+  const newTitle = prompt("Edit title:", currentTitle);
+  if (newTitle === null) return; // cancelled
+  const newDesc = prompt("Edit description:", currentDesc);
+
+  const formData = new FormData();
+  formData.append("edit_id", id);
+  formData.append("new_title", newTitle);
+  formData.append("new_description", newDesc);
+
+  fetch("admin-guides-pest.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(result => {
+      showToast(result.message, result.status);
+      if (result.status === "success") {
+        loadPage("admin-guides-pest.php");
+      }
+    })
+    .catch(err => {
+      console.error("Edit error:", err);
+      showToast("Error editing pest guide", "error");
+    });
+}
+
+// Expose globally so HTML onclick works
+window.deleteVideo = deleteVideo;
+window.editVideo = editVideo;
 window.loadPage = loadPage;
 window.toggleDropdown = toggleDropdown;
 window.logout = logout;

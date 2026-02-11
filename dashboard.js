@@ -115,7 +115,6 @@ function toggleCategory(card) {
   card.classList.toggle('active');
 }
 
-// Load section content dynamically with persistence + active link
 function loadSection(page) {
   const container = document.getElementById("dashboard-content");
   container.innerHTML = "<p>Loading...</p>";
@@ -127,16 +126,19 @@ function loadSection(page) {
     })
     .then(html => {
       container.innerHTML = html;
-      // Save the last loaded section in localStorage
       localStorage.setItem("lastSection", page);
 
-      // Highlight the active link
       document.querySelectorAll(".sidebar-link").forEach(link => {
         link.classList.remove("active");
         if (link.getAttribute("onclick").includes(page)) {
           link.classList.add("active");
         }
       });
+
+      // ✅ Re‑initialize seeker after injection
+      if (page === "seeker.php" && typeof initSeeker === "function") {
+        initSeeker();
+      }
     })
     .catch(err => {
       container.innerHTML = "<p>Error loading content.</p>";
@@ -221,7 +223,75 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// Video modal
+function openModal(type, source, title, desc = "") {
+  const modal = document.getElementById('videoModal');
+  const container = document.getElementById('modalVideoContainer');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDesc = document.getElementById('modalDesc');
+
+  modal.style.display = 'flex';
+  modalTitle.textContent = title;
+  modalDesc.textContent = desc; // ✅ show description
+
+  if (type === 'youtube') {
+    container.innerHTML = `<iframe width="100%" height="450" src="https://www.youtube.com/embed/${source}" frameborder="0" allowfullscreen></iframe>`;
+  } else if (type === 'file') {
+    container.innerHTML = `<video width="100%" controls autoplay>
+                              <source src="${source}" type="video/mp4">
+                           </video>`;
+  }
+}
+
+
+function closeModal() {
+  const modal = document.getElementById('videoModal');
+  const container = document.getElementById('modalVideoContainer');
+  modal.style.display = 'none';
+  container.innerHTML = '';
+  document.getElementById('modalDesc').textContent = '';
+}
+
+
+// Allow closing modal with ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === "Escape") {
+    closeModal();
+  }
+});
+
+// Tab switching
+function showTab(tabId) {
+  document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+}
+
+// Image modal
+function openImageModal(src, title, desc = "") {
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImage');
+  const imageTitle = document.getElementById('imageTitle');
+  const imageDesc = document.getElementById('imageDesc');
+
+  modal.style.display = 'flex';
+  modalImg.src = src;
+  imageTitle.textContent = title;
+  imageDesc.textContent = desc; // ✅ show description
+}
+
+function closeImageModal() {
+  const modal = document.getElementById('imageModal');
+  modal.style.display = 'none';
+  document.getElementById('modalImage').src = '';
+  document.getElementById('imageDesc').textContent = '';
+}
+
+
 // Expose globally
+window.openModal = openModal;
+window.closeModal = closeModal;
 window.toggleCategory = toggleCategory;
 window.toggleSidebar = toggleSidebar;
 window.toggleProfile = toggleProfile;
