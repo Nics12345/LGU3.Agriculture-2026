@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_id'])) {
 include 'db.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// Handle guide upload
+/* -------------------- UPLOAD -------------------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
     $title = trim($_POST['title'] ?? 'Untitled Video');
     $description = trim($_POST['description'] ?? '');
@@ -24,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
         $filePath = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES['video']['tmp_name'], $filePath)) {
-            $videoPath = $fileName;
+            // store relative path for consistency
+            $videoPath = "uploads/pest_videos/" . $fileName;
         } else {
             echo json_encode(["status"=>"error","message"=>"Upload failed"]);
             exit;
@@ -63,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title'])) {
     exit;
 }
 
-// Handle delete
+/* -------------------- DELETE -------------------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $id = intval($_POST['delete_id']);
     $stmt = $conn->prepare("SELECT video_path FROM pest_videos WHERE id=?");
@@ -72,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $res = $stmt->get_result();
     if ($row = $res->fetch_assoc()) {
         if (!empty($row['video_path'])) {
-            $filePath = __DIR__ . "/uploads/pest_videos/" . $row['video_path'];
+            $filePath = __DIR__ . "/" . $row['video_path'];
             if (file_exists($filePath)) unlink($filePath);
         }
     }
@@ -94,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-// Handle edit
+/* -------------------- EDIT -------------------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
     $id    = intval($_POST['edit_id']);
     $title = trim($_POST['new_title']);
@@ -145,10 +146,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
         while ($video = $videos->fetch_assoc()) {
             echo "<div class='video-card'>";
             if (!empty($video['video_path'])) {
-                echo "<img src='assets/video-thumb.png' alt='Thumbnail'
-                        onclick='openModal(\"file\", \"uploads/pest_videos/{$video['video_path']}\",
+                echo "<video width='240' height='135' preload='metadata'
+                        onclick='openModal(\"file\", \"{$video['video_path']}\",
                         \"".htmlspecialchars($video['title'], ENT_QUOTES)."\",
-                        \"".htmlspecialchars($video['description'], ENT_QUOTES)."\")'>";
+                        \"".htmlspecialchars($video['description'], ENT_QUOTES)."\")'>
+                        <source src='{$video['video_path']}' type='video/mp4'>
+                        Your browser does not support the video tag.
+                      </video>";
             } elseif (!empty($video['youtube_id'])) {
                 echo "<img src='https://img.youtube.com/vi/{$video['youtube_id']}/hqdefault.jpg' alt='Thumbnail'
                         onclick='openModal(\"youtube\", \"{$video['youtube_id']}\",
@@ -189,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
     <p>Are you sure you want to delete this pest guide?</p>
     <div class="modal-actions">
       <button class="btn btn-danger" onclick="confirmDeletePest()">Delete</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('deletePestModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-secondary" onclick="closeModal('deletePestModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -204,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_id'])) {
     <textarea id="editPestDesc" rows="4"></textarea>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="confirmEditPest()">Save</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('editPestModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-secondary" onclick="closeModal('editPestModal')">Cancel</button>
     </div>
   </div>
 </div>

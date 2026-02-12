@@ -266,3 +266,6 @@ if (isset($_GET['list_images']) && $_GET['list_images'] === '1') {
     </div>
   </div>
 </div>
+
+<link rel="stylesheet" href="admin-guides-farm.css">
+<script src="admin-guides-farm.js"></script>

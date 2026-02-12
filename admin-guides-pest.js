@@ -1,9 +1,15 @@
-// Handle Pest Guide Upload
-document.addEventListener("DOMContentLoaded", () => {
+// admin-guides-pest.js
+
+function initPestJS() {
+  // =======================
+  // Pest Guide Upload Form
+  // =======================
   const pestVideoForm = document.getElementById("add-pest-video-form");
   if (pestVideoForm) {
     pestVideoForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+      e.preventDefault(); // stop normal refresh
+      console.log("Intercepted pest guide form submit");
+
       const formData = new FormData(pestVideoForm);
 
       try {
@@ -11,11 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           body: formData
         });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
         const result = await response.json();
+        console.log("Upload result:", result);
 
         showToast(result.message, result.status);
 
         if (result.status === "success") {
+          // reload the pest guides list
           loadPage("admin-guides-pest.php");
         }
       } catch (err) {
@@ -23,15 +36,17 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("Error adding pest guide", "error");
       }
     });
+  } else {
+    console.error("Form #add-pest-video-form not found in DOM");
   }
-});
+}
 
 // =======================
 // Delete Pest Guide Modal
 // =======================
 function openDeletePestModal(id) {
   const modal = document.getElementById("deletePestModal");
-  modal.classList.add("show");   // use CSS class toggle
+  modal.classList.add("show");
   modal.setAttribute("data-id", id);
 }
 
@@ -42,10 +57,7 @@ function confirmDeletePest() {
   const formData = new FormData();
   formData.append("delete_id", id);
 
-  fetch("admin-guides-pest.php", {
-    method: "POST",
-    body: formData
-  })
+  fetch("admin-guides-pest.php", { method: "POST", body: formData })
     .then(res => res.json())
     .then(result => {
       showToast(result.message, result.status);
@@ -58,7 +70,7 @@ function confirmDeletePest() {
       showToast("Error deleting pest guide", "error");
     })
     .finally(() => {
-      modal.classList.remove("show"); // hide modal after action
+      modal.classList.remove("show");
     });
 }
 
@@ -67,14 +79,12 @@ function confirmDeletePest() {
 // =======================
 function openEditPestModal(id, currentTitle, currentDesc) {
   const modal = document.getElementById("editPestModal");
-  modal.classList.add("show");   // use CSS class toggle
+  modal.classList.add("show");
   modal.setAttribute("data-id", id);
 
-  // Prefill the form fields inside the modal
   document.getElementById("editPestTitle").value = currentTitle;
   document.getElementById("editPestDesc").value = currentDesc;
 }
-
 
 function confirmEditPest() {
   const modal = document.getElementById("editPestModal");
@@ -88,10 +98,7 @@ function confirmEditPest() {
   formData.append("new_title", newTitle);
   formData.append("new_description", newDesc);
 
-  fetch("admin-guides-pest.php", {
-    method: "POST",
-    body: formData
-  })
+  fetch("admin-guides-pest.php", { method: "POST", body: formData })
     .then(res => res.json())
     .then(result => {
       showToast(result.message, result.status);
@@ -104,12 +111,12 @@ function confirmEditPest() {
       showToast("Error editing pest guide", "error");
     })
     .finally(() => {
-      modal.classList.remove("show"); // hide modal after action
+      modal.classList.remove("show");
     });
 }
 
-
-// Expose globally
+// Expose globally so loadPage can call initPestJS after injection
+window.initPestJS = initPestJS;
 window.openDeletePestModal = openDeletePestModal;
 window.confirmDeletePest = confirmDeletePest;
 window.openEditPestModal = openEditPestModal;

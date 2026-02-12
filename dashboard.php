@@ -12,6 +12,8 @@ if (!isset($_SESSION['user_id'])) {
   <title>User Dashboard</title>
   <!-- External CSS -->
   <link rel="stylesheet" href="dashboard.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="weather-notify.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="guides-soil.css?v=<?php echo time(); ?>">
 </head>
 <body>
   <div class="topbar">
@@ -49,24 +51,28 @@ if (!isset($_SESSION['user_id'])) {
   </div>
 
   <div class="dashboard">
-    <div class="sidebar" id="sidebar">
-      <a href="chatbot-dashboard.php">🤖 Chatbot</a>
-      <div class="sidebar">
-<a href="#" onclick="loadSection('user-market-data.php')">📈 Market Data</a>
-</div>
-      <a href="#" onclick="loadSection('guides.php')">📘 Farming Guides</a>
-      <a href="#" onclick="loadSection('pest.php')">🐛 Pest Control Guides</a>
-      <a href="#" onclick="loadSection('seeker.php')">Roboflow Seeker</a>
-      <a href="#" onclick="loadSection('weather.php')">🌤 Weather Forecast</a>
-    </div>
-      <div class="content" id="dashboard-content">
-        <h2>Welcome, <?php echo htmlspecialchars($_SESSION['fullname']); ?>!</h2>
-        <p>Select an option from the sidebar.</p>
-      </div>
+  <div class="sidebar" id="sidebar">
+    <a href="chatbot-dashboard.php">🤖 Chatbot</a>
+    <div class="sidebar">
+    <a href="#" onclick="loadSection('user-market-data.php')">📈 Market Data</a>
+    <a href="#" onclick="loadSection('guides.php')">📘 Farming Guides</a>
+    <a href="#" onclick="loadSection('pest.php')">🐛 Pest Control Guides</a>
+    <a href="#" onclick="loadSection('guides-soil.php')">🌱 Soil Analysis</a>
+    <a href="#" onclick="loadSection('seeker.php')">🔎 Roboflow Seeker</a>
+    <a href="#" onclick="loadSection('weather.php')">🌤 Weather Forecast</a>
+    <a href="#" onclick="loadSection('weather-notify.php')">📢 Weather Notify</a>
   </div>
+      </div>
+
+  <div class="content" id="dashboard-content">
+    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['fullname']); ?>!</h2>
+    <p>Select an option from the sidebar.</p>
+  </div>
+</div>
   <!-- External JS -->
   <script src="dashboard.js?v=<?php echo time(); ?>" defer></script>
 <script src="seeker.js"></script>
-
+<script src="weather-notify.js"></script>
+<script src="guides-soil.js"></script>
 </body>
 </html>

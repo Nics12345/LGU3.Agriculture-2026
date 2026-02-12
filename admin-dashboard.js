@@ -14,20 +14,31 @@ function loadPage(page) {
 
       // ✅ Re-bind forms after content is loaded
       const adminForm = document.getElementById("create-admin-form");
-      if (adminForm) bindCreateAdminForm(adminForm);
+      if (adminForm && typeof bindCreateAdminForm === "function") {
+        bindCreateAdminForm(adminForm);
+      }
 
       const videoForm = document.getElementById("add-video-form");
-      if (videoForm) bindAddVideoForm(videoForm);
-
-      const pestVideoForm = document.getElementById("add-pest-video-form");
-      if (pestVideoForm) bindAddPestVideoForm(pestVideoForm);
+      if (videoForm && typeof bindAddVideoForm === "function") {
+        bindAddVideoForm(videoForm);
+      }
 
       const marketForm = document.getElementById("add-market-form");
-      if (marketForm) bindMarketForm(marketForm);
+      if (marketForm && typeof bindMarketForm === "function") {
+        bindMarketForm(marketForm);
+      }
 
-      // ✅ Re-bind User Management handlers (now inside admin-users-admin.php)
+      // ✅ Re-bind User Management handlers
       if (document.getElementById("users-table") && typeof bindUserManagement === "function") {
         bindUserManagement();
+      }
+
+      // ✅ Re-init pest/farm guide scripts after their pages are loaded
+      if (page === "admin-guides-pest.php" && typeof initPestJS === "function") {
+        initPestJS();
+      }
+      if (page === "admin-guides-farm.php" && typeof initFarmJS === "function") {
+        initFarmJS();
       }
     })
     .catch(err => {
@@ -463,29 +474,6 @@ if (editForm) {
 }
 
 
-function bindAddPestVideoForm(form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch("admin-guides-pest.php", {
-        method: "POST",
-        body: formData
-      });
-      const result = await response.json();
-      showToast(result.message, result.status);
-
-      if (result.status === "success") {
-        loadPage("admin-guides-pest.php");
-      }
-    } catch (err) {
-      showToast("Error adding video", "error");
-    }
-  });
-}
-
-
 // Handle deletion via AJAX
 async function deleteMarketItem(id) {
   if (confirm("Are you sure you want to remove this product?")) {
@@ -568,87 +556,6 @@ function openTab(tabId) {
   // Highlight the clicked button
   const btn = document.querySelector(`.tab-btn[onclick="openTab('${tabId}')"]`);
   if (btn) btn.classList.add("active");
-}
-
-// Bind Pest Guide Upload Form
-const pestVideoForm = document.getElementById("add-pest-video-form");
-if (pestVideoForm) bindAddPestVideoForm(pestVideoForm);
-
-function bindAddPestVideoForm(form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch("admin-guides-pest.php", {
-        method: "POST",
-        body: formData
-      });
-      const result = await response.json();
-
-      showToast(result.message, result.status);
-
-      if (result.status === "success") {
-        // reload pest admin page to show new guide
-        loadPage("admin-guides-pest.php");
-      }
-    } catch (err) {
-      console.error("Pest upload error:", err);
-      showToast("Error adding pest guide", "error");
-    }
-  });
-}
-
-// Delete Pest Guide
-function deleteVideo(id) {
-  if (!confirm("Delete this pest guide?")) return;
-
-  const formData = new FormData();
-  formData.append("delete_id", id);
-
-  fetch("admin-guides-pest.php", {
-    method: "POST",
-    body: formData
-  })
-    .then(res => res.json())
-    .then(result => {
-      showToast(result.message, result.status);
-      if (result.status === "success") {
-        loadPage("admin-guides-pest.php");
-      }
-    })
-    .catch(err => {
-      console.error("Delete error:", err);
-      showToast("Error deleting pest guide", "error");
-    });
-}
-
-// Edit Pest Guide
-function editVideo(id, currentTitle, currentDesc) {
-  const newTitle = prompt("Edit title:", currentTitle);
-  if (newTitle === null) return; // cancelled
-  const newDesc = prompt("Edit description:", currentDesc);
-
-  const formData = new FormData();
-  formData.append("edit_id", id);
-  formData.append("new_title", newTitle);
-  formData.append("new_description", newDesc);
-
-  fetch("admin-guides-pest.php", {
-    method: "POST",
-    body: formData
-  })
-    .then(res => res.json())
-    .then(result => {
-      showToast(result.message, result.status);
-      if (result.status === "success") {
-        loadPage("admin-guides-pest.php");
-      }
-    })
-    .catch(err => {
-      console.error("Edit error:", err);
-      showToast("Error editing pest guide", "error");
-    });
 }
 
 // Expose globally so HTML onclick works

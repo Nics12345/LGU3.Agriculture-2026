@@ -1,0 +1,125 @@
+/* Forecast container */
+#weather-forecast {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.forecast-day {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 10px;
+  border-top: 2px solid #ddd;
+}
+
+.notify-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.add-notify-form {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.add-notify-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notify-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.notify-card {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 15px;
+  width: 280px;
+}
+
+.notify-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Forecast card */
+.forecast-card {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  min-width: 160px;
+  text-align: center;
+  flex-shrink: 0; /* prevent shrinking in row */
+}
+
+.forecast-card.severe {
+  border: 2px solid #e74c3c;
+  background: #ffe6e6;
+  color: #c0392b;
+  font-weight: bold;
+}
+
+
+.notify-card {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 15px;
+  width: 280px;
+}
+
+.notify-card.severe {
+  border-left: 6px solid #e74c3c; /* red accent bar */
+  background: #fff5f5;
+}
+
+.forecast-card.sunny {
+  background: #fff9c4; /* light yellow */
+  color: #f57f17;
+}
+
+.forecast-card.cloudy {
+  background: #e3f2fd; /* light blue */
+  color: #1565c0;
+}
+
+.forecast-card.rain {
+  background: #cfd8dc; /* greyish blue */
+  color: #37474f;
+}
+
+.forecast-card.storm {
+  background: #ffcdd2; /* light red */
+  color: #b71c1c;
+}
+
+.forecast-card.snow {
+  background: #e0f7fa; /* icy blue */
+  color: #006064;
+}
+
+.btn-primary { background: #4e73df; }
+.btn-warning { background: #f1c40f; color: #333; }
+.btn-danger { background: #e74c3c; }

@@ -11,7 +11,11 @@ if (!isset($_SESSION['admin_id'])) {
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="admin-dashboard.css">
+  <link rel="stylesheet" href="admin-guides-pest.css">
+  <link rel="stylesheet" href="admin-guides-farm.css">
+  <script src="admin-guides-farm.js"></script>
   <script src="admin-dashboard.js?v=<?php echo time(); ?>" defer></script>
+  <script src="admin-guides-pest.js?v=<?php echo time(); ?>" defer></script>
 </head>
 <body>
 

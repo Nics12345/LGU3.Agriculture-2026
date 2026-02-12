@@ -79,7 +79,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-  color: #fff;
+  color: #ffffff;
   transition: background 0.3s ease;
 }
 .btn-danger { background: #e74c3c; }
@@ -136,4 +136,26 @@
 .no-videos p {
   margin: 0;
   color: #777;
+}
+
+/* Landscape video modal */
+.video-modal {
+  width: 80%;          /* much wider */
+  max-width: 1000px;   /* cap at desktop width */
+}
+
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.video-wrapper iframe,
+.video-wrapper video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
 }

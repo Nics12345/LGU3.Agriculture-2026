@@ -49,7 +49,6 @@ foreach ($lines as $line) {
 
     // Only process lines containing 'Rice' and within a category
     if ($currentCategory && stripos($line, 'Rice') !== false) {
-        // Split line into tokens by whitespace
         $tokens = preg_split('/\s+/', $line);
 
         // Find the last numeric token (the price)
@@ -62,13 +61,11 @@ foreach ($lines as $line) {
         }
 
         if ($price !== null) {
-            // Remove the price token from product name
             array_pop($tokens);
             $product = trim(implode(' ', $tokens));
             $unit    = "kg";
             $date    = date("Y-m-d");
 
-            // Apply normalization if available
             if (isset($normalize[$product])) {
                 $product = $normalize[$product];
             }
@@ -85,12 +82,33 @@ foreach ($lines as $line) {
             }
 
             // --- Insert or update DB ---
-            $stmt = $conn->prepare("REPLACE INTO market_data (product_name, price, unit, status, updated_at, category) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("REPLACE INTO market_data 
+                (product_name, price, unit, status, updated_at, category) 
+                VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("sdssss", $product, $price, $unit, $trend, $date, $currentCategory);
             $stmt->execute();
+            $stmt->close();
+
+            // --- Insert per-product notification (only if trend changed) ---
+            if ($trend !== "Stable") {
+                $msg  = "📈 Market Update: {$product} ({$currentCategory}) is now ₱{$price}/{$unit} ({$trend})";
+                $link = "user-market-data.php";
+                $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+                $nstmt->bind_param("ss", $msg, $link);
+                $nstmt->execute();
+                $nstmt->close();
+            }
         }
     }
 }
+
+// --- Summary notification once per run ---
+$msg  = "📊 DA Market Data updated for " . date("F j, Y");
+$link = "user-market-data.php";
+$nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
+$nstmt->bind_param("ss", $msg, $link);
+$nstmt->execute();
+$nstmt->close();
 
 echo "✅ Parsing complete (Rice separated by category)!\n";
 ?>

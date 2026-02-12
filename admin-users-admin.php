@@ -79,8 +79,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
       exit;
     }
 
+    // Update user details
     $stmt = $conn->prepare("UPDATE users SET fullname=?, email=?, phone=?, address=? WHERE id=?");
     $stmt->bind_param("ssssi", $fullname, $email, $phone, $address, $id);
+    $stmt->execute();
+    $stmt->close();
+
+    // ✅ Update last_active timestamp
+    $stmt = $conn->prepare("UPDATE users SET last_active = NOW() WHERE id=?");
+    $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
 
@@ -90,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
   }
   exit;
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -118,46 +126,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
   <div class="user-table-wrapper">
     <table id="users-table">
       <thead>
-        <tr>
-          <th>👤 Full Name</th>
-          <th>📧 Email</th>
-          <th>📞 Phone</th>
-          <th>🏠 Address</th>
-          <th>📅 Created</th>
-          <th>⏳ Status</th>
-          <th>⚙️ Actions</th>
-        </tr>
+            <tr>
+                <th>👤 Full Name</th>
+                <th>📧 Email</th>
+                <th>📞 Phone</th>
+                <th>🏠 Address</th>
+                <th>📅 Created</th>
+                <th>🕒 Last Active</th>
+                <th>⏳ Status</th>
+                <th>⚙️ Actions</th>
+            </tr>
       </thead>
       <tbody>
         <?php
         $result = $conn->query("SELECT id, fullname, email, phone, address, created_at, last_active FROM users ORDER BY created_at DESC");
-        if ($result && $result->num_rows > 0) {
-          while ($row = $result->fetch_assoc()) {
-            $createdDate = date("F j, Y", strtotime($row['created_at']));
-            $lastActive = isset($row['last_active']) ? strtotime($row['last_active']) : strtotime($row['created_at']);
-            $inactiveDays = (time() - $lastActive) / (60 * 60 * 24);
-            $status = $inactiveDays > 7 ? "⚠️ Inactive > 1 week" : "✅ Active";
+if ($result && $result->num_rows > 0) {
+  while ($row = $result->fetch_assoc()) {
+    $createdDate = date("F j, Y", strtotime($row['created_at']));
+    $lastActiveDisplay = $row['last_active'] ? date("F j, Y g:i A", strtotime($row['last_active'])) : "—";
 
-            echo "<tr>
-                    <td>" . htmlspecialchars($row['fullname']) . "</td>
-                    <td>" . htmlspecialchars($row['email']) . "</td>
-                    <td>" . htmlspecialchars($row['phone']) . "</td>
-                    <td>" . htmlspecialchars($row['address']) . "</td>
-                    <td>" . $createdDate . "</td>
-                    <td>" . $status . "</td>
-                    <td>
-                      <button class='btn btn-warning edit-btn'
-                              data-id='" . $row['id'] . "'
-                              data-name='" . htmlspecialchars($row['fullname']) . "'
-                              data-email='" . htmlspecialchars($row['email']) . "'
-                              data-phone='" . htmlspecialchars($row['phone']) . "'
-                              data-address='" . htmlspecialchars($row['address']) . "'>✏️ Edit</button>
-                    </td>
-                  </tr>";
-          }
-        } else {
-          echo "<tr><td colspan='7' style='text-align:center;'>🚫 No users found</td></tr>";
-        }
+    $lastActive = $row['last_active'] ? strtotime($row['last_active']) : strtotime($row['created_at']);
+    $inactiveDays = (time() - $lastActive) / (60 * 60 * 24);
+    $status = $inactiveDays > 7 ? "⚠️ Inactive > 1 week" : "✅ Active";
+
+    echo "<tr>
+            <td>" . htmlspecialchars($row['fullname']) . "</td>
+            <td>" . htmlspecialchars($row['email']) . "</td>
+            <td>" . htmlspecialchars($row['phone']) . "</td>
+            <td>" . htmlspecialchars($row['address']) . "</td>
+            <td>" . $createdDate . "</td>
+            <td>" . $lastActiveDisplay . "</td>
+            <td>" . $status . "</td>
+            <td>
+              <button class='btn btn-warning edit-btn'
+                      data-id='" . $row['id'] . "'
+                      data-name='" . htmlspecialchars($row['fullname']) . "'
+                      data-email='" . htmlspecialchars($row['email']) . "'
+                      data-phone='" . htmlspecialchars($row['phone']) . "'
+                      data-address='" . htmlspecialchars($row['address']) . "'>✏️ Edit</button>
+            </td>
+          </tr>";
+  }
+} else {
+  echo "<tr><td colspan='8' style='text-align:center;'>🚫 No users found</td></tr>";
+}
         ?>
       </tbody>
     </table>

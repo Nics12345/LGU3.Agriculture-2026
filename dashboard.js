@@ -115,6 +115,7 @@ function toggleCategory(card) {
   card.classList.toggle('active');
 }
 
+
 function loadSection(page) {
   const container = document.getElementById("dashboard-content");
   container.innerHTML = "<p>Loading...</p>";
@@ -138,6 +139,19 @@ function loadSection(page) {
       // ✅ Re‑initialize seeker after injection
       if (page === "seeker.php" && typeof initSeeker === "function") {
         initSeeker();
+      }
+
+      // ✅ Re‑initialize weather notify after injection
+      if (page === "weather-notify.php") {
+        // dynamically load the script
+        const script = document.createElement("script");
+        script.src = "weather-notify.js?v=" + Date.now(); // bust cache
+        script.onload = () => {
+          if (typeof initWeatherNotify === "function") {
+            initWeatherNotify();
+          }
+        };
+        document.body.appendChild(script);
       }
     })
     .catch(err => {

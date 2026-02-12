@@ -1,0 +1,115 @@
+.guides-container {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 900px;
+  margin: 0 auto; /* center in dashboard */
+}
+
+.guides-container h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* Soil Analysis Chatbox */
+.soil-analysis {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.soil-analysis h3 {
+  margin-bottom: 15px;
+  text-align: center;
+  color: #27ae60;
+}
+
+#soil-analysis-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#soil-analysis-form input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+}
+
+#soil-analysis-form input:focus {
+  outline: none;
+  border-color: #4e73df;
+  box-shadow: 0 0 5px rgba(78,115,223,0.3);
+}
+
+#soil-analysis-form button {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  background: #27ae60;
+  color: #fff;
+  transition: background 0.3s ease;
+}
+
+#soil-analysis-form button:hover {
+  background: #219150;
+}
+
+#soil-analysis-result {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Soil Guides Cards */
+.soil-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center; /* center cards */
+}
+
+.soil-card {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  width: 280px;
+  text-align: center;
+}
+
+.soil-card h3 {
+  color: #4e73df;
+  margin-bottom: 10px;
+}
+
+.soil-card p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+}
+
+.btn-primary { background: #4e73df; }
+.btn-warning { background: #f1c40f; color: #333; }
+.btn-danger { background: #e74c3c; }
+.btn-success { background: #27ae60; }
