@@ -3,7 +3,7 @@ Page 1 of 8
 Department of Agriculture 
 DAILY PRICE INDEX 
 National Capital Region (NCR) 
-(Tuesday, February 10, 2026) 
+(Thursday, February 12, 2026) 
  
  
 Prevailing Retail Price of Agri-fishery Commodities in Selected Wet Markets 
@@ -12,34 +12,34 @@ PREVAILING
 RETAIL PRICE PER 
 UNIT (P/UNIT) 
 IMPORTED COMMERCIAL RICE     
-Basmati Rice  	217.50 
+Basmati Rice  	207.86 
 Glutinous Rice  	60.93 
 Jasponica/Japonica Rice 	62.61 
 Other Special Rice 	White Rice 	60.60 
-Premium 	5% broken 	55.25 
-Well Milled 	1-19% bran streak 	51.27 
+Premium 	5% broken 	55.61 
+Well Milled 	1-19% bran streak 	50.87 
 Regular Milled 	20-40% bran streak 	40.63 
 LOCAL COMMERCIAL RICE  
  
 Glutinous Rice  	74.13 
-Other Special Rice 	White Rice 	58.82 
-Premium 	5% broken 	51.65 
-Well Milled 	1-19% bran streak 	45.29 
-Regular Milled 	20-40% bran streak 	41.13 
+Other Special Rice 	White Rice 	58.94 
+Premium 	5% broken 	51.90 
+Well Milled 	1-19% bran streak 	45.51 
+Regular Milled 	20-40% bran streak 	41.21 
 CORN PRODUCTS   
  
-Corn (White) 	Cob, Glutinous 	85.88 
-Corn (Yellow) 	Cob, Sweet Corn 	81.65 
+Corn (White) 	Cob, Glutinous 	81.67 
+Corn (Yellow) 	Cob, Sweet Corn 	80.83 
 Corn Grits (White, Food Grade)  	120.00 
 Corn Grits (Yellow, Food Grade)   	120.00 
 Corn Cracked (Yellow, Feed Grade)   	50.00 
 Corn Grits (Feed Grade)  	46.67 
 LEGUMES   
-Mungbean  	129.73 
+Mungbean  	129.90 
 FISH PRODUCTS   
  
-Alumahan (Indian Mackerel) Medium (4-6 pcs/kg) 	388.82 
-Bangus, Large 	Large (1-2 pcs) 	263.02
+Alumahan (Indian Mackerel) Medium (4-6 pcs/kg) 	383.75 
+Bangus, Large 	Large (1-2 pcs) 	260.68
 
 Page 2 of 8 
  
@@ -47,30 +47,30 @@ COMMODITY 	SPECIFICATION
 PREVAILING 
 RETAIL PRICE PER 
 UNIT (P/UNIT) 
-Bangus, Medium 	Medium (3-4 pcs/kg) 	235.43 
+Bangus, Medium 	Medium (3-4 pcs/kg) 	235.78 
 Bonito (Frigate Tuna)  	n/a 
-Galunggong, Local 	Male, Medium (12-14 pcs/kg) 349.64 
-Galunggong, Imported Male, Medium (12-14 pcs/kg) 297.33 
+Galunggong, Local 	Male, Medium (12-14 pcs/kg) 353.40 
+Galunggong, Imported Male, Medium (12-14 pcs/kg) 301.54 
 Mackerel, Local 	Fresh, Whole Round 
 n/a 
 Mackerel, Imported Frozen, Whole Round 
 n/a 
 Pampano, Local   	506.67 
-Pampano, Imported  	407.75 
+Pampano, Imported  	406.40 
 Salmon Belly, Local   	n/a 
-Salmon Belly, Imported  	422.88 
+Salmon Belly, Imported  	423.54 
 Salmon Head, Local   	n/a 
-Salmon Head, Imported  	222.41 
-Sardines (Tamban)   	136.67 
-Squid (Pusit Bisaya), Local Medium 	487.83 
-Squid, Imported   	222.67 
+Salmon Head, Imported  	222.47 
+Sardines (Tamban)   	137.78 
+Squid (Pusit Bisaya), Local Medium 	478.99 
+Squid, Imported   	220.00 
 Tambakol (Yellow-Fin Tuna), 
 Local 
-Medium, Fresh or Chilled 335.64 
+Medium, Fresh or Chilled 329.82 
 Tambakol (Yellow-Fin Tuna), 
 Imported 
 Medium, Frozen 	n/a 
-Tilapia 	Medium (5-6 pcs/kg) 	155.18 
+Tilapia 	Medium (5-6 pcs/kg) 	154.71 
 BEEF MEAT PRODUCTS  
  
 Beef Brisket, Local 	Meat with Bones 	429.36 
@@ -112,7 +112,7 @@ Beef Tongue, Local   	545.00
 Beef Tongue, Imported  	n/a 
 PORK MEAT PRODUCTS  
  
-Pork Belly (Liempo), Local  	384.76 
+Pork Belly (Liempo), Local  	384.62 
 Pork Belly (Liempo), Imported  	314.38 
 Pork Boston Shoulder, Local  	357.50 
 Pork Boston Shoulder, Imported   	n/a 
@@ -135,7 +135,7 @@ Pork Hind Shank, Local  	319.08
 Pork Hind Shank, Imported  	217.50 
 Pork Loin, Local   	380.53 
 Pork Loin, Imported  	278.00 
-Pork Offals, Local   	250.97 
+Pork Offals, Local   	251.11 
 Pork Offals, Imported  	152.63 
 Pork Picnic Shoulder (Kasim), 
 Local 
@@ -145,7 +145,7 @@ Imported
   	255.39 
 Pork Rind/Skin, Local  	106.67 
 Pork Rind/Skin, Imported  	n/a 
-Pork Spare Ribs, Local  	325.97 
+Pork Spare Ribs, Local  	325.89 
 Pork Spare Ribs, Imported  	240.00 
 OTHER LIVESTOCK MEAT 
 PRODUCTS 
@@ -168,7 +168,7 @@ POULTRY PRODUCTS
  
 Chicken Breast, Local Magnolia 	221.02 
 Chicken Breast, Local Bounty Fresh 	230.00 
-Chicken Breast, Local Unbranded, Fresh 	211.61 
+Chicken Breast, Local Unbranded, Fresh 	211.55 
 Chicken Breast, Imported  	n/a 
 Chicken Drumstick, Local Magnolia 	227.76 
 Chicken Drumstick, Local Bounty Fresh 	230.00
@@ -179,29 +179,29 @@ COMMODITY 	SPECIFICATION
 PREVAILING 
 RETAIL PRICE PER 
 UNIT (P/UNIT) 
-Chicken Drumstick, Local Unbranded, Fresh 	218.03 
+Chicken Drumstick, Local Unbranded, Fresh 	217.79 
 Chicken Drumstick, Imported  	n/a 
-Chicken Feet, Local   	145.39 
+Chicken Feet, Local   	145.29 
 Chicken Feet, Imported  	n/a 
 Chicken Leg Quarter Magnolia 	224.90 
 Chicken Leg Quarter Bounty Fresh 	230.00 
-Chicken Leg Quarter Unbranded, Fresh 	212.70 
+Chicken Leg Quarter Unbranded, Fresh 	212.48 
 Chicken Leg Quarter, Imported  	165.50 
 Chicken Liver, Local  	232.97 
 Chicken Liver, Imported  	n/a 
-Chicken Neck, Local  	142.70 
+Chicken Neck, Local  	142.40 
 Chicken Neck, Imported  	n/a 
 Chicken Rind/Skin, Local  	149.20 
 Chicken Rind/Skin, Imported  	n/a 
-Chicken Thigh, Local  	216.52 
+Chicken Thigh, Local  	216.24 
 Chicken Thigh, Imported  	n/a 
 Chicken Wing, Local Magnolia 	226.63 
 Chicken Wing, Local Bounty Fresh 	230.00 
-Chicken Wing, Local Unbranded, Fresh 	217.50 
+Chicken Wing, Local Unbranded, Fresh 	216.90 
 Chicken Wing, Imported  	n/a 
-Whole Chicken, Local Magnolia 	210.79 
+Whole Chicken, Local Magnolia 	210.52 
 Whole Chicken, Local Bounty Fresh 	210.00 
-Whole Chicken, Local Fully Dressed 	200.63 
+Whole Chicken, Local Fully Dressed 	200.33 
 Whole Chicken, Imported  	n/a 
 Chicken Egg (White, Medium) 56-60 grams/pc 	8.19 
 Duck Meat, Local   
@@ -214,7 +214,7 @@ Peckin Duck, Imported
 n/a 
 LOWLAND VEGETABLES  
  
-Ampalaya 	4-5 pcs/kg 	160.68
+Ampalaya 	4-5 pcs/kg 	154.34
 
 Page 6 of 8 
  
@@ -222,46 +222,46 @@ COMMODITY 	SPECIFICATION
 PREVAILING 
 RETAIL PRICE PER 
 UNIT (P/UNIT) 
-Chilli (Green), Local Haba/Panigang 	111.82 
-Eggplant 	3-4 Small Bundles 	91.30 
-Native Pechay 	3-4 Small Bundles 	73.75 
-Pole Sitao 	3-4 Small Bundles 	135.39 
-Squash 	Suprema Variety 	60.55 
-Tomato 	15-18 pcs/kg 	71.20 
+Chilli (Green), Local Haba/Panigang 	111.38 
+Eggplant 	3-4 Small Bundles 	88.91 
+Native Pechay 	3-4 Small Bundles 	72.76 
+Pole Sitao 	3-4 Small Bundles 	135.77 
+Squash 	Suprema Variety 	60.41 
+Tomato 	15-18 pcs/kg 	70.48 
 HIGHLAND VEGETABLES  
  
-Bell Pepper (Green), Local Medium (151-250gm/pc) 243.18 
+Bell Pepper (Green), Local Medium (151-250gm/pc) 238.10 
 Bell Pepper (Green), Imported  	n/a 
-Bell Pepper (Red), Local Medium (151-250gm/pc) 246.47 
+Bell Pepper (Red), Local Medium (151-250gm/pc) 243.24 
 Bell Pepper (Red), Imported  	n/a 
 Broccoli, Local 
 Medium (8-10 cm 
 diameter/bunch hd) 
-190.91 
-Broccoli, Imported   	212.87 
+184.17 
+Broccoli, Imported   	211.20 
 Cauliflower, Local 
 Medium (8-10 cm 
 diameter/bunch hd) 
-112.28 
+112.07 
 Cauliflower, Imported  	n/a 
-Cabbage (Rare Ball) 510 gm - 1 kg/head 	84.58 
-Cabbage (Scorpio) 	750 gm - 1 kg/head 	87.50 
-Cabbage (Wonder Ball) 510 gm - 1 kg/head 	86.27 
+Cabbage (Rare Ball) 510 gm - 1 kg/head 	83.19 
+Cabbage (Scorpio) 	750 gm - 1 kg/head 	92.50 
+Cabbage (Wonder Ball) 510 gm - 1 kg/head 	83.58 
 Cabbage, Imported   	n/a 
-Carrots, Local 	8-10 pcs/kg 	96.70 
-Carrots, Imported   	101.25 
-Celery 	Medium (501-800 g) 	158.25 
-Chayote 	Medium (301-400 g) 	59.14 
-Habichuelas/Baguio Beans, Local   	94.44 
-Pechay Baguio   	85.62 
-Lettuce (Green Ice)   	182.95 
+Carrots, Local 	8-10 pcs/kg 	96.91 
+Carrots, Imported   	100.00 
+Celery 	Medium (501-800 g) 	159.49 
+Chayote 	Medium (301-400 g) 	58.77 
+Habichuelas/Baguio Beans, Local   	93.59 
+Pechay Baguio   	84.83 
+Lettuce (Green Ice)   	179.79 
 Lettuce (Iceberg) 
 Medium (301-450 cm 
 diameter/bunch hd) 
-267.44 
-Lettuce (Romaine)   	229.60 
+258.33 
+Lettuce (Romaine)   	215.10 
 Lettuce, Imported   	n/a 
-White Potato, Local 	10-12 pcs/kg 	119.11
+White Potato, Local 	10-12 pcs/kg 	119.46
 
 Page 7 of 8 
  
@@ -272,44 +272,44 @@ UNIT (P/UNIT)
 White Potato, Imported  	n/a 
 SPICES   
  
-Chilli (Red), Local 	Tingala 	236.12 
+Chilli (Red), Local 	Tingala 	216.85 
 Tiger Chillies, Imported 
  
 n/a 
 Garlic, Native/Local  	366.67 
-Garlic, Imported   	152.17 
+Garlic, Imported   	152.02 
 Ginger, Local 
 Fairly well-matured, Medium 
 (150-300 gm) 
-156.40 
+156.56 
 Ginger, Imported 
 Fairly well-matured, Medium 
 (150-300 gm) 
-172.67 
-Red Onion, Local 	13-15 pcs/kg 	144.03 
-Red Onion, Imported Medium   	127.24 
-Red Onion, Imported Large 	114.63 
-White Onion, Local   	118.72 
-White Onion, Imported Medium 	123.62 
-White Onion, Imported Large 	118.21 
+164.17 
+Red Onion, Local 	13-15 pcs/kg 	141.05 
+Red Onion, Imported Medium   	123.63 
+Red Onion, Imported Large 	109.83 
+White Onion, Local   	117.59 
+White Onion, Imported Medium 	123.06 
+White Onion, Imported Large 	116.64 
 FRUITS   
  
-Avocado   	325.60 
-Banana (Lakatan) 	8-10 pcs/kg 	99.33 
-Banana (Latundan) 	10-12 pcs/kg 	75.83 
-Banana (Saba)   	55.22 
-Calamansi   	128.79 
-Mango (Carabao) 	Ripe, 3-4 pcs/kg 	200.48 
-Melon   	105.75 
+Avocado   	317.20 
+Banana (Lakatan) 	8-10 pcs/kg 	99.18 
+Banana (Latundan) 	10-12 pcs/kg 	75.72 
+Banana (Saba)   	55.12 
+Calamansi   	126.18 
+Mango (Carabao) 	Ripe, 3-4 pcs/kg 	200.36 
+Melon   	105.96 
 Papaya 	Solo, Ripe, 2-3 pcs/kg 	72.22 
 Pomelo   	184.48 
-Watermelon   	80.43 
+Watermelon   	80.51 
 OTHER BASIC COMMODITIES  
  
-Salt (Rock)   	21.78 
-Salt (Iodized)   	38.78 
-Sugar (Refined)   	82.10 
-Sugar (Washed)   	75.07
+Salt (Rock)   	21.61 
+Salt (Iodized)   	38.80 
+Sugar (Refined)   	82.03 
+Sugar (Washed)   	75.05
 
 Page 8 of 8 
  
@@ -318,10 +318,10 @@ PREVAILING
 RETAIL PRICE PER 
 UNIT (P/UNIT) 
 Sugar (Brown)   	73.48 
-Cooking Oil (Palm) 	350 ml/bottle 	35.88 
-Cooking Oil (Palm) 	1 Liter/bottle 	90.41 
-Cooking Oil (Coconut) 350 ml/bottle 	58.51 
-Cooking Oil (Coconut) 1 Liter/bottle 	159.17 
+Cooking Oil (Palm) 	350 ml/bottle 	36.07 
+Cooking Oil (Palm) 	1 Liter/bottle 	90.45 
+Cooking Oil (Coconut) 350 ml/bottle 	58.49 
+Cooking Oil (Coconut) 1 Liter/bottle 	159.43 
 Cooking Oil (Minola) 500 ml/bottle 	90.00 
 Cooking Oil (Minola) 1,000 ml/bottle 	140.00 
 Cooking Oil (Spring) 500 ml/bottle 	n/a 

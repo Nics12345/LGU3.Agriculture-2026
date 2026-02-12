@@ -5,8 +5,8 @@ include 'db.php';
 use Smalot\PdfParser\Parser;
 
 // --- 1. Download DA PDF ---
-$pdfUrl  = "https://www.da.gov.ph/wp-content/uploads/2026/02/Daily-Price-Index-February-10-2026.pdf";
-$pdfFile = __DIR__ . "/Daily-Price-Index-February-10-2026.pdf";
+$pdfUrl  = "https://www.da.gov.ph/wp-content/uploads/2026/02/Daily-Price-Index-February-12-2026.pdf";
+$pdfFile = __DIR__ . "/Daily-Price-Index-February-12-2026.pdf";
 file_put_contents($pdfFile, file_get_contents($pdfUrl));
 
 // --- 2. Parse PDF ---
