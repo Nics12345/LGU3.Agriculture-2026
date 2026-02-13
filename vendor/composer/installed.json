@@ -251,7 +251,7 @@
             },
             "time": "2026-01-08T08:04:04+00:00",
             "type": "library",
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "psr-0": {
                     "Smalot\\PdfParser\\": "src/"
@@ -566,7 +566,7 @@
             },
             "time": "2023-10-05T21:14:48+00:00",
             "type": "library",
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "psr-4": {
                     "thiagoalessio\\TesseractOCR\\": "src/"
