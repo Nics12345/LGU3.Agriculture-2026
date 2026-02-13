@@ -4,22 +4,35 @@ include 'db.php';
 
 use Smalot\PdfParser\Parser;
 
-// --- 1. Download DA PDF ---
-$pdfUrl  = "https://www.da.gov.ph/wp-content/uploads/2026/02/Daily-Price-Index-February-12-2026.pdf";
-$pdfFile = __DIR__ . "/Daily-Price-Index-February-12-2026.pdf";
+// --- 1. Fetch DA page and find latest PDF ---
+$daPageUrl = "https://www.da.gov.ph/daily-price-index/"; // DA page listing PDFs
+$html = @file_get_contents($daPageUrl);
+if (!$html) {
+    die("❌ Failed to fetch DA page");
+}
+
+// Regex to find the first PDF link (latest one)
+if (preg_match('/https:\/\/www\.da\.gov\.ph\/wp-content\/uploads\/[^\s"]+\.pdf/i', $html, $matches)) {
+    $pdfUrl = $matches[0];
+} else {
+    die("❌ No PDF link found on DA page");
+}
+
+// --- 2. Download latest PDF ---
+$pdfFile = __DIR__ . "/latest-da-price-index.pdf";
 file_put_contents($pdfFile, file_get_contents($pdfUrl));
 
-// --- 2. Parse PDF ---
+// --- 3. Parse PDF ---
 $parser = new Parser();
 $pdf    = $parser->parseFile($pdfFile);
 $text   = $pdf->getText();
 
-// --- 3. Split into lines ---
+// --- 4. Split into lines ---
 $lines = explode("\n", $text);
 
 // --- Debug: dump raw text ---
 file_put_contents(__DIR__ . "/pdf_dump.txt", $text);
-echo "📄 PDF text dumped to pdf_dump.txt\n";
+echo "📄 Latest DA PDF text dumped to pdf_dump.txt\n";
 
 // --- Normalization map for cleaner product names ---
 $normalize = [
@@ -29,13 +42,12 @@ $normalize = [
     "Premium 5% broken" => "Premium Rice (5% broken)"
 ];
 
-// --- Track current category (Imported vs Local) ---
+// --- Track current category ---
 $currentCategory = null;
 
-// --- 4. Process each line ---
+// --- 5. Process each line ---
 foreach ($lines as $line) {
     $line = trim($line);
-    echo "Line: $line\n";
 
     // Detect category headers
     if (stripos($line, "IMPORTED COMMERCIAL RICE") !== false) {
@@ -69,8 +81,6 @@ foreach ($lines as $line) {
             if (isset($normalize[$product])) {
                 $product = $normalize[$product];
             }
-
-            echo "Matched Rice: $product | $unit | $price | Category: $currentCategory\n";
 
             // --- Trend logic ---
             $trend = "Stable";
