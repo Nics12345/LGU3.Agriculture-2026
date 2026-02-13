@@ -1,15 +1,14 @@
 <?php
-/*
+
 $servername = "localhost";
 $username   = "lgu3_lgu3";
 $password   = "lgu123";
 $dbname     = "lgu3_lgu3";
-*/
 
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "lgu3_platform";
+// $servername = "localhost";
+// $username   = "root";
+// $password   = "";
+// $dbname     = "lgu3_platform";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
