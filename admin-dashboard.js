@@ -58,7 +58,20 @@ function bindAddVideoForm(form) {
         method: "POST",
         body: formData
       });
-      const result = await response.json();
+      
+      // Get response as text first to debug
+      const responseText = await response.text();
+      console.log("Response:", responseText);
+      
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        showToast("Server returned invalid response. Check error log.", "error");
+        return;
+      }
+      
       showToast(result.message, result.status);
       if (result.status === "success") {
         form.reset();
@@ -67,7 +80,8 @@ function bindAddVideoForm(form) {
         loadFarmImages();
       }
     } catch (err) {
-      showToast("Error adding guide", "error");
+      console.error("Fetch Error:", err);
+      showToast("Network error: " + err.message, "error");
     }
   });
 }

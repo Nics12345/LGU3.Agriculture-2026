@@ -1,98 +1,182 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
 session_start();
 if (!isset($_SESSION['admin_id'])) {
-  echo "<p style='color:red;'>Access denied.</p>";
+  header("Content-Type: application/json");
+  echo json_encode(["status"=>"error","message"=>"Access denied. Not logged in."]);
   exit;
 }
 
 include 'db.php';
 
+// Debug function
+function logError($msg) {
+    $logFile = __DIR__ . '/error_guide_log.txt';
+    file_put_contents($logFile, "[" . date("Y-m-d H:i:s") . "] " . $msg . "\n", FILE_APPEND);
+}
+
 /* -------------------- VIDEO UPLOAD -------------------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['video_file']) && $_FILES['video_file']['error'] === UPLOAD_ERR_OK) {
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    if ($title === '') $title = "Untitled Video";
+    header("Content-Type: application/json");
+    
+    try {
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        if ($title === '') $title = "Untitled Video";
 
-    $uploadDir = __DIR__ . "/uploads/farm_videos/";
-    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+        $uploadDir = __DIR__ . "/uploads/farm_videos/";
+        
+        // Check if directory exists and create if needed
+        if (!is_dir($uploadDir)) {
+            if (!@mkdir($uploadDir, 0777, true)) {
+                throw new Exception("Failed to create upload directory. Check permissions.");
+            }
+        }
+        
+        // Verify directory is writable
+        if (!is_writable($uploadDir)) {
+            throw new Exception("Upload directory is not writable. Check folder permissions.");
+        }
 
-    $fileName = time() . "_" . basename($_FILES['video_file']['name']);
-    $targetPath = $uploadDir . $fileName;
+        $fileName = time() . "_" . basename($_FILES['video_file']['name']);
+        $targetPath = $uploadDir . $fileName;
 
-    if (move_uploaded_file($_FILES['video_file']['tmp_name'], $targetPath)) {
+        if (!move_uploaded_file($_FILES['video_file']['tmp_name'], $targetPath)) {
+            throw new Exception("Failed to move uploaded file. Check server permissions and disk space.");
+        }
+        
         $dbPath = "uploads/farm_videos/" . $fileName;
         $stmt = $conn->prepare("INSERT INTO farm_videos (file_path, title, description) VALUES (?, ?, ?)");
+        if (!$stmt) {
+            throw new Exception("Database error: " . $conn->error);
+        }
+        
         $stmt->bind_param("sss", $dbPath, $title, $description);
-        $stmt->execute(); $stmt->close();
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to insert video record: " . $stmt->error);
+        }
+        $stmt->close();
 
         $msg  = "📘 New farm video uploaded: $title";
         $link = "guides.php";
         $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-        $nstmt->bind_param("ss", $msg, $link);
-        $nstmt->execute(); $nstmt->close();
+        if ($nstmt) {
+            $nstmt->bind_param("ss", $msg, $link);
+            $nstmt->execute();
+            $nstmt->close();
+        }
 
-        echo json_encode(["status"=>"success","message"=>"Video uploaded"]);
-    } else {
-        echo json_encode(["status"=>"error","message"=>"Video upload failed"]);
+        echo json_encode(["status"=>"success","message"=>"✓ Video uploaded successfully"]);
+    } catch (Exception $e) {
+        logError("VIDEO UPLOAD ERROR: " . $e->getMessage());
+        echo json_encode(["status"=>"error","message"=>"Video upload failed: " . $e->getMessage()]);
     }
     exit;
 }
 
 /* -------------------- IMAGE UPLOAD -------------------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    if ($title === '') $title = "Untitled Image";
+    header("Content-Type: application/json");
+    
+    try {
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        if ($title === '') $title = "Untitled Image";
 
-    $uploadDir = __DIR__ . "/uploads/farm_images/";
-    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+        $uploadDir = __DIR__ . "/uploads/farm_images/";
+        
+        // Check if directory exists and create if needed
+        if (!is_dir($uploadDir)) {
+            if (!@mkdir($uploadDir, 0777, true)) {
+                throw new Exception("Failed to create upload directory. Check permissions.");
+            }
+        }
+        
+        // Verify directory is writable
+        if (!is_writable($uploadDir)) {
+            throw new Exception("Upload directory is not writable. Check folder permissions.");
+        }
 
-    $fileName = time() . "_" . basename($_FILES['image_file']['name']);
-    $targetPath = $uploadDir . $fileName;
+        $fileName = time() . "_" . basename($_FILES['image_file']['name']);
+        $targetPath = $uploadDir . $fileName;
 
-    if (move_uploaded_file($_FILES['image_file']['tmp_name'], $targetPath)) {
+        if (!move_uploaded_file($_FILES['image_file']['tmp_name'], $targetPath)) {
+            throw new Exception("Failed to move uploaded file. Check server permissions and disk space.");
+        }
+        
         $dbPath = "uploads/farm_images/" . $fileName;
         $stmt = $conn->prepare("INSERT INTO farm_images (file_path, title, description) VALUES (?, ?, ?)");
+        if (!$stmt) {
+            throw new Exception("Database error: " . $conn->error);
+        }
+        
         $stmt->bind_param("sss", $dbPath, $title, $description);
-        $stmt->execute(); $stmt->close();
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to insert image record: " . $stmt->error);
+        }
+        $stmt->close();
 
         $msg  = "📘 New farm image uploaded: $title";
         $link = "guides.php";
         $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-        $nstmt->bind_param("ss", $msg, $link);
-        $nstmt->execute(); $nstmt->close();
+        if ($nstmt) {
+            $nstmt->bind_param("ss", $msg, $link);
+            $nstmt->execute();
+            $nstmt->close();
+        }
 
-        echo json_encode(["status"=>"success","message"=>"Image uploaded"]);
-    } else {
-        echo json_encode(["status"=>"error","message"=>"Image upload failed"]);
+        echo json_encode(["status"=>"success","message"=>"✓ Image uploaded successfully"]);
+    } catch (Exception $e) {
+        logError("IMAGE UPLOAD ERROR: " . $e->getMessage());
+        echo json_encode(["status"=>"error","message"=>"Image upload failed: " . $e->getMessage()]);
     }
     exit;
 }
 
 /* -------------------- YOUTUBE LINK -------------------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['youtube_link'])) {
-    $link = trim($_POST['youtube_link']);
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
+    header("Content-Type: application/json");
+    
+    try {
+        $link = trim($_POST['youtube_link']);
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
 
-    preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^\&\?\/]+)/', $link, $matches);
-    $youtube_id = $matches[1] ?? '';
+        preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^\&\?\/]+)/', $link, $matches);
+        $youtube_id = $matches[1] ?? '';
 
-    if ($youtube_id !== '') {
+        if ($youtube_id === '') {
+            throw new Exception("Invalid YouTube link format. Use full YouTube URL.");
+        }
+        
         if ($title === '') $title = "Untitled Video";
+        
         $stmt = $conn->prepare("INSERT INTO farm_videos (youtube_id, title, description) VALUES (?, ?, ?)");
+        if (!$stmt) {
+            throw new Exception("Database error: " . $conn->error);
+        }
+        
         $stmt->bind_param("sss", $youtube_id, $title, $description);
-        $stmt->execute(); $stmt->close();
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to insert YouTube video: " . $stmt->error);
+        }
+        $stmt->close();
 
         $msg  = "📘 New farm guide added: $title";
         $link = "guides.php";
         $nstmt = $conn->prepare("INSERT INTO notifications (message, link) VALUES (?, ?)");
-        $nstmt->bind_param("ss", $msg, $link);
-        $nstmt->execute(); $nstmt->close();
+        if ($nstmt) {
+            $nstmt->bind_param("ss", $msg, $link);
+            $nstmt->execute();
+            $nstmt->close();
+        }
 
-        echo json_encode(["status"=>"success","message"=>"YouTube video added"]);
-    } else {
-        echo json_encode(["status"=>"error","message"=>"Invalid YouTube link"]);
+        echo json_encode(["status"=>"success","message"=>"✓ YouTube video added successfully"]);
+    } catch (Exception $e) {
+        logError("YOUTUBE LINK ERROR: " . $e->getMessage());
+        echo json_encode(["status"=>"error","message"=>"YouTube guide failed: " . $e->getMessage()]);
     }
     exit;
 }

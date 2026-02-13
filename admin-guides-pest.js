@@ -19,21 +19,32 @@ function initPestJS() {
         });
 
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Network response was not ok: " + response.status);
         }
 
-        const result = await response.json();
-        console.log("Upload result:", result);
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
+        let result;
+        try {
+          result = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error("JSON Parse Error:", parseError);
+          showToast("Server returned invalid response. Check error log.", "error");
+          return;
+        }
 
+        console.log("Upload result:", result);
         showToast(result.message, result.status);
 
         if (result.status === "success") {
           // reload the pest guides list
+          pestVideoForm.reset();
           loadPage("admin-guides-pest.php");
         }
       } catch (err) {
         console.error("Pest upload error:", err);
-        showToast("Error adding pest guide", "error");
+        showToast("Network error: " + err.message, "error");
       }
     });
   } else {
