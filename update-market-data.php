@@ -4,37 +4,57 @@ include 'db.php';
 
 use Smalot\PdfParser\Parser;
 
-// --- 1. Fetch DA page and find latest PDF ---
-$daPageUrl = "https://www.da.gov.ph/daily-price-index/"; // DA page listing PDFs
-$html = @file_get_contents($daPageUrl);
-if (!$html) {
-    die("❌ Failed to fetch DA page");
+$logFile = __DIR__ . "/update-market-data.log";
+function logMsg($msg) {
+    global $logFile;
+    file_put_contents($logFile, "[".date('Y-m-d H:i:s')."] $msg\n", FILE_APPEND);
 }
 
+// --- 1. Fetch DA page and find latest PDF ---
+$daPageUrl = "https://www.da.gov.ph/daily-price-index/";
+$html = @file_get_contents($daPageUrl);
+if (!$html) {
+    logMsg("❌ Failed to fetch DA page");
+    die("❌ Failed to fetch DA page");
+}
+logMsg("✅ DA page fetched successfully");
+
 // Regex to find the first PDF link (latest one)
-if (preg_match('/https:\/\/www\.da\.gov\.ph\/wp-content\/uploads\/[^\s"]+\.pdf/i', $html, $matches)) {
+if (preg_match('/https:\/\/www\.da\.gov\.ph\/[^\s"]+\.pdf/i', $html, $matches)) {
     $pdfUrl = $matches[0];
+    logMsg("✅ Found PDF URL: $pdfUrl");
 } else {
+    logMsg("❌ No PDF link found on DA page");
     die("❌ No PDF link found on DA page");
 }
 
 // --- 2. Download latest PDF ---
 $pdfFile = __DIR__ . "/latest-da-price-index.pdf";
-file_put_contents($pdfFile, file_get_contents($pdfUrl));
+$pdfData = @file_get_contents($pdfUrl);
+if (!$pdfData) {
+    logMsg("❌ Failed to download PDF from $pdfUrl");
+    die("❌ Failed to download PDF");
+}
+file_put_contents($pdfFile, $pdfData);
+logMsg("✅ PDF downloaded to $pdfFile");
 
 // --- 3. Parse PDF ---
 $parser = new Parser();
-$pdf    = $parser->parseFile($pdfFile);
-$text   = $pdf->getText();
+try {
+    $pdf  = $parser->parseFile($pdfFile);
+    $text = $pdf->getText();
+    logMsg("✅ PDF parsed successfully");
+} catch (Exception $e) {
+    logMsg("❌ PDF parsing failed: ".$e->getMessage());
+    die("❌ PDF parsing failed");
+}
 
 // --- 4. Split into lines ---
-$lines = explode("\n", $text);
-
-// --- Debug: dump raw text ---
+$lines = preg_split('/\r\n|\r|\n/', $text);
 file_put_contents(__DIR__ . "/pdf_dump.txt", $text);
-echo "📄 Latest DA PDF text dumped to pdf_dump.txt\n";
+logMsg("📄 Raw PDF text dumped to pdf_dump.txt");
 
-// --- Normalization map for cleaner product names ---
+// --- Normalization map ---
 $normalize = [
     "Well Milled 1-19% bran streak" => "Well Milled Rice (1–19% bran streak)",
     "Regular Milled 20-40% bran streak" => "Regular Milled Rice (20–40% bran streak)",
@@ -42,8 +62,8 @@ $normalize = [
     "Premium 5% broken" => "Premium Rice (5% broken)"
 ];
 
-// --- Track current category ---
 $currentCategory = null;
+$rowCount = 0;
 
 // --- 5. Process each line ---
 foreach ($lines as $line) {
@@ -84,12 +104,16 @@ foreach ($lines as $line) {
 
             // --- Trend logic ---
             $trend = "Stable";
-            $prev = $conn->query("SELECT price FROM market_data WHERE product_name='$product' AND category='$currentCategory' ORDER BY updated_at DESC LIMIT 1");
-            if ($prev && $prev->num_rows > 0) {
-                $prevPrice = $prev->fetch_assoc()['price'];
+            $prevStmt = $conn->prepare("SELECT price FROM market_data WHERE product_name=? AND category=? ORDER BY updated_at DESC LIMIT 1");
+            $prevStmt->bind_param("ss", $product, $currentCategory);
+            $prevStmt->execute();
+            $prevResult = $prevStmt->get_result();
+            if ($prevResult && $prevResult->num_rows > 0) {
+                $prevPrice = $prevResult->fetch_assoc()['price'];
                 if ($price > $prevPrice) $trend = "Increasing";
                 elseif ($price < $prevPrice) $trend = "Decreasing";
             }
+            $prevStmt->close();
 
             // --- Insert or update DB ---
             $stmt = $conn->prepare("REPLACE INTO market_data 
@@ -98,6 +122,7 @@ foreach ($lines as $line) {
             $stmt->bind_param("sdssss", $product, $price, $unit, $trend, $date, $currentCategory);
             $stmt->execute();
             $stmt->close();
+            $rowCount++;
 
             // --- Insert per-product notification (only if trend changed) ---
             if ($trend !== "Stable") {
@@ -120,5 +145,6 @@ $nstmt->bind_param("ss", $msg, $link);
 $nstmt->execute();
 $nstmt->close();
 
+logMsg("✅ Parsing complete. Rows processed: $rowCount");
 echo "✅ Parsing complete (Rice separated by category)!\n";
 ?>
