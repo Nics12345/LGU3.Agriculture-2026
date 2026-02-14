@@ -37,7 +37,7 @@ function fetchUrl($url) {
 }
 
 // --- 1. Fetch DA page and find latest PDF ---
-$daPageUrl = "https://www.da.gov.ph/daily-price-index/";
+$daPageUrl = "https://www.da.gov.ph/price-monitoring/";
 $html = fetchUrl($daPageUrl);
 if (!$html) {
     die("❌ Failed to fetch DA page");
