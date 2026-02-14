@@ -10,11 +10,36 @@ function logMsg($msg) {
     file_put_contents($logFile, "[".date('Y-m-d H:i:s')."] $msg\n", FILE_APPEND);
 }
 
+// --- Helper function: fetch URL with cURL ---
+function fetchUrl($url) {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_USERAGENT => "Mozilla/5.0 (compatible; MarketDataBot/1.0)"
+    ]);
+    $data = curl_exec($ch);
+    if (curl_errno($ch)) {
+        $error = curl_error($ch);
+        logMsg("❌ cURL error fetching $url: $error");
+        curl_close($ch);
+        return false;
+    }
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($httpCode !== 200) {
+        logMsg("❌ HTTP $httpCode returned for $url");
+        return false;
+    }
+    return $data;
+}
+
 // --- 1. Fetch DA page and find latest PDF ---
 $daPageUrl = "https://www.da.gov.ph/daily-price-index/";
-$html = @file_get_contents($daPageUrl);
+$html = fetchUrl($daPageUrl);
 if (!$html) {
-    logMsg("❌ Failed to fetch DA page");
     die("❌ Failed to fetch DA page");
 }
 logMsg("✅ DA page fetched successfully");
@@ -30,9 +55,8 @@ if (preg_match('/https:\/\/www\.da\.gov\.ph\/[^\s"]+\.pdf/i', $html, $matches)) 
 
 // --- 2. Download latest PDF ---
 $pdfFile = __DIR__ . "/latest-da-price-index.pdf";
-$pdfData = @file_get_contents($pdfUrl);
+$pdfData = fetchUrl($pdfUrl);
 if (!$pdfData) {
-    logMsg("❌ Failed to download PDF from $pdfUrl");
     die("❌ Failed to download PDF");
 }
 file_put_contents($pdfFile, $pdfData);
